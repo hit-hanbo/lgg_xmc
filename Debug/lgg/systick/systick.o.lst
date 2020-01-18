@@ -1,0 +1,251 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "systick.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global system_ticks
+  20              	 .section .bss.system_ticks,"aw",%nobits
+  21              	 .align 2
+  24              	system_ticks:
+  25 0000 00000000 	 .space 4
+  26              	 .section .text.lgg_systick_init,"ax",%progbits
+  27              	 .align 2
+  28              	 .global lgg_systick_init
+  29              	 .thumb
+  30              	 .thumb_func
+  32              	lgg_systick_init:
+  33              	.LFB132:
+  34              	 .file 1 "../lgg/systick/systick.c"
+   1:../lgg/systick/systick.c **** #include "systick.h"
+   2:../lgg/systick/systick.c **** 
+   3:../lgg/systick/systick.c **** /*
+   4:../lgg/systick/systick.c ****  *   @ Description: SysTick Configure
+   5:../lgg/systick/systick.c ****  *   @ Author:      HIT-hanbo
+   6:../lgg/systick/systick.c ****  *   @ History:     2019-11-11  Demo
+   7:../lgg/systick/systick.c ****  *   				2020-01-18  Add Comments
+   8:../lgg/systick/systick.c **** */
+   9:../lgg/systick/systick.c **** 
+  10:../lgg/systick/systick.c **** volatile uint32_t system_ticks = 0;
+  11:../lgg/systick/systick.c **** 
+  12:../lgg/systick/systick.c **** /*
+  13:../lgg/systick/systick.c ****  *   @ Brief: init systick timer to generate 1ms interrupt request
+  14:../lgg/systick/systick.c ****  *   @ param: none
+  15:../lgg/systick/systick.c ****  */
+  16:../lgg/systick/systick.c **** void lgg_systick_init(void)
+  17:../lgg/systick/systick.c **** {
+  35              	 .loc 1 17 0
+  36              	 .cfi_startproc
+  37              	 
+  38              	 
+  39              	 
+  40 0000 80B4     	 push {r7}
+  41              	.LCFI0:
+  42              	 .cfi_def_cfa_offset 4
+  43              	 .cfi_offset 7,-4
+  44 0002 00AF     	 add r7,sp,#0
+  45              	.LCFI1:
+  46              	 .cfi_def_cfa_register 7
+  18:../lgg/systick/systick.c **** 	system_ticks = 0;
+  47              	 .loc 1 18 0
+  48 0004 0C4B     	 ldr r3,.L2
+  49 0006 0022     	 movs r2,#0
+  50 0008 1A60     	 str r2,[r3]
+  19:../lgg/systick/systick.c **** 	SysTick->CTRL |= ((1 << 1) | (1 << 2));
+  51              	 .loc 1 19 0
+  52 000a 0C4A     	 ldr r2,.L2+4
+  53 000c 0B4B     	 ldr r3,.L2+4
+  54 000e 1B68     	 ldr r3,[r3]
+  55 0010 43F00603 	 orr r3,r3,#6
+  56 0014 1360     	 str r3,[r2]
+  20:../lgg/systick/systick.c **** 	SysTick->VAL = 0x00000000;
+  57              	 .loc 1 20 0
+  58 0016 094B     	 ldr r3,.L2+4
+  59 0018 0022     	 movs r2,#0
+  60 001a 9A60     	 str r2,[r3,#8]
+  21:../lgg/systick/systick.c **** 	SysTick->LOAD = 120000;
+  61              	 .loc 1 21 0
+  62 001c 074B     	 ldr r3,.L2+4
+  63 001e 084A     	 ldr r2,.L2+8
+  64 0020 5A60     	 str r2,[r3,#4]
+  22:../lgg/systick/systick.c **** 	SysTick->CTRL |= (1 << 0);
+  65              	 .loc 1 22 0
+  66 0022 064A     	 ldr r2,.L2+4
+  67 0024 054B     	 ldr r3,.L2+4
+  68 0026 1B68     	 ldr r3,[r3]
+  69 0028 43F00103 	 orr r3,r3,#1
+  70 002c 1360     	 str r3,[r2]
+  23:../lgg/systick/systick.c **** }
+  71              	 .loc 1 23 0
+  72 002e BD46     	 mov sp,r7
+  73              	.LCFI2:
+  74              	 .cfi_def_cfa_register 13
+  75              	 
+  76 0030 5DF8047B 	 ldr r7,[sp],#4
+  77              	.LCFI3:
+  78              	 .cfi_restore 7
+  79              	 .cfi_def_cfa_offset 0
+  80 0034 7047     	 bx lr
+  81              	.L3:
+  82 0036 00BF     	 .align 2
+  83              	.L2:
+  84 0038 00000000 	 .word system_ticks
+  85 003c 10E000E0 	 .word -536813552
+  86 0040 C0D40100 	 .word 120000
+  87              	 .cfi_endproc
+  88              	.LFE132:
+  90              	 .section .text.lgg_delay,"ax",%progbits
+  91              	 .align 2
+  92              	 .global lgg_delay
+  93              	 .thumb
+  94              	 .thumb_func
+  96              	lgg_delay:
+  97              	.LFB133:
+  24:../lgg/systick/systick.c **** 
+  25:../lgg/systick/systick.c **** /*
+  26:../lgg/systick/systick.c ****  *   @ Brief: delay function
+  27:../lgg/systick/systick.c ****  *   @ param: millisecond to delay
+  28:../lgg/systick/systick.c ****  */
+  29:../lgg/systick/systick.c **** void lgg_delay(uint32_t ms)
+  30:../lgg/systick/systick.c **** {
+  98              	 .loc 1 30 0
+  99              	 .cfi_startproc
+ 100              	 
+ 101              	 
+ 102              	 
+ 103 0000 80B4     	 push {r7}
+ 104              	.LCFI4:
+ 105              	 .cfi_def_cfa_offset 4
+ 106              	 .cfi_offset 7,-4
+ 107 0002 85B0     	 sub sp,sp,#20
+ 108              	.LCFI5:
+ 109              	 .cfi_def_cfa_offset 24
+ 110 0004 00AF     	 add r7,sp,#0
+ 111              	.LCFI6:
+ 112              	 .cfi_def_cfa_register 7
+ 113 0006 7860     	 str r0,[r7,#4]
+  31:../lgg/systick/systick.c **** 	uint32_t tick_start = system_ticks;
+ 114              	 .loc 1 31 0
+ 115 0008 074B     	 ldr r3,.L6
+ 116 000a 1B68     	 ldr r3,[r3]
+ 117 000c FB60     	 str r3,[r7,#12]
+  32:../lgg/systick/systick.c **** 	while(
+ 118              	 .loc 1 32 0
+ 119 000e 00BF     	 nop
+ 120              	.L5:
+  33:../lgg/systick/systick.c **** 			system_ticks - tick_start < ms
+ 121              	 .loc 1 33 0 discriminator 1
+ 122 0010 054B     	 ldr r3,.L6
+ 123 0012 1A68     	 ldr r2,[r3]
+ 124 0014 FB68     	 ldr r3,[r7,#12]
+ 125 0016 D21A     	 subs r2,r2,r3
+  32:../lgg/systick/systick.c **** 	while(
+ 126              	 .loc 1 32 0 discriminator 1
+ 127 0018 7B68     	 ldr r3,[r7,#4]
+ 128 001a 9A42     	 cmp r2,r3
+ 129 001c F8D3     	 bcc .L5
+  34:../lgg/systick/systick.c **** 	);
+  35:../lgg/systick/systick.c **** }
+ 130              	 .loc 1 35 0
+ 131 001e 1437     	 adds r7,r7,#20
+ 132              	.LCFI7:
+ 133              	 .cfi_def_cfa_offset 4
+ 134 0020 BD46     	 mov sp,r7
+ 135              	.LCFI8:
+ 136              	 .cfi_def_cfa_register 13
+ 137              	 
+ 138 0022 5DF8047B 	 ldr r7,[sp],#4
+ 139              	.LCFI9:
+ 140              	 .cfi_restore 7
+ 141              	 .cfi_def_cfa_offset 0
+ 142 0026 7047     	 bx lr
+ 143              	.L7:
+ 144              	 .align 2
+ 145              	.L6:
+ 146 0028 00000000 	 .word system_ticks
+ 147              	 .cfi_endproc
+ 148              	.LFE133:
+ 150              	 .section .text.SysTick_Handler,"ax",%progbits
+ 151              	 .align 2
+ 152              	 .global SysTick_Handler
+ 153              	 .thumb
+ 154              	 .thumb_func
+ 156              	SysTick_Handler:
+ 157              	.LFB134:
+  36:../lgg/systick/systick.c **** 
+  37:../lgg/systick/systick.c **** /*
+  38:../lgg/systick/systick.c ****  *   @ Brief: systick interrupt service routine
+  39:../lgg/systick/systick.c ****  *   @ param: must be none
+  40:../lgg/systick/systick.c ****  */
+  41:../lgg/systick/systick.c **** void SysTick_Handler(void)
+  42:../lgg/systick/systick.c **** {
+ 158              	 .loc 1 42 0
+ 159              	 .cfi_startproc
+ 160              	 
+ 161              	 
+ 162              	 
+ 163 0000 80B4     	 push {r7}
+ 164              	.LCFI10:
+ 165              	 .cfi_def_cfa_offset 4
+ 166              	 .cfi_offset 7,-4
+ 167 0002 00AF     	 add r7,sp,#0
+ 168              	.LCFI11:
+ 169              	 .cfi_def_cfa_register 7
+  43:../lgg/systick/systick.c **** 	system_ticks ++;
+ 170              	 .loc 1 43 0
+ 171 0004 044B     	 ldr r3,.L9
+ 172 0006 1B68     	 ldr r3,[r3]
+ 173 0008 0133     	 adds r3,r3,#1
+ 174 000a 034A     	 ldr r2,.L9
+ 175 000c 1360     	 str r3,[r2]
+  44:../lgg/systick/systick.c **** }
+ 176              	 .loc 1 44 0
+ 177 000e BD46     	 mov sp,r7
+ 178              	.LCFI12:
+ 179              	 .cfi_def_cfa_register 13
+ 180              	 
+ 181 0010 5DF8047B 	 ldr r7,[sp],#4
+ 182              	.LCFI13:
+ 183              	 .cfi_restore 7
+ 184              	 .cfi_def_cfa_offset 0
+ 185 0014 7047     	 bx lr
+ 186              	.L10:
+ 187 0016 00BF     	 .align 2
+ 188              	.L9:
+ 189 0018 00000000 	 .word system_ticks
+ 190              	 .cfi_endproc
+ 191              	.LFE134:
+ 193              	 .text
+ 194              	.Letext0:
+ 195              	 .file 2 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 196              	 .file 3 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 197              	 .file 4 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/core_cm4.h"
+ 198              	 .file 5 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/cmsis_gcc.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 systick.c
+    {standard input}:24     .bss.system_ticks:00000000 system_ticks
+    {standard input}:21     .bss.system_ticks:00000000 $d
+    {standard input}:27     .text.lgg_systick_init:00000000 $t
+    {standard input}:32     .text.lgg_systick_init:00000000 lgg_systick_init
+    {standard input}:84     .text.lgg_systick_init:00000038 $d
+    {standard input}:91     .text.lgg_delay:00000000 $t
+    {standard input}:96     .text.lgg_delay:00000000 lgg_delay
+    {standard input}:146    .text.lgg_delay:00000028 $d
+    {standard input}:151    .text.SysTick_Handler:00000000 $t
+    {standard input}:156    .text.SysTick_Handler:00000000 SysTick_Handler
+    {standard input}:189    .text.SysTick_Handler:00000018 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

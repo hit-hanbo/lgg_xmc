@@ -1,0 +1,657 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "queue.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.lgg_queue_init,"ax",%progbits
+  20              	 .align 2
+  21              	 .global lgg_queue_init
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	lgg_queue_init:
+  26              	.LFB132:
+  27              	 .file 1 "../lgg/queue/queue.c"
+   1:../lgg/queue/queue.c **** #include "queue.h"
+   2:../lgg/queue/queue.c **** #include "stdlib.h"
+   3:../lgg/queue/queue.c **** 
+   4:../lgg/queue/queue.c **** /*
+   5:../lgg/queue/queue.c ****  *    LGG Driver for ARM Cortex-M
+   6:../lgg/queue/queue.c ****  *    Circular Queue (FIFO)
+   7:../lgg/queue/queue.c ****  *    < @History: 2019-04-08 Add basic options >
+   8:../lgg/queue/queue.c ****  *    <           2019-12-16 Change name >
+   9:../lgg/queue/queue.c ****  *    <			  2020-01-18             >
+  10:../lgg/queue/queue.c ****  *
+  11:../lgg/queue/queue.c ****  */
+  12:../lgg/queue/queue.c **** 
+  13:../lgg/queue/queue.c **** /*
+  14:../lgg/queue/queue.c ****  *	 Circular Queue Init Funtion
+  15:../lgg/queue/queue.c ****  *   @ Brief : Init Circular Queue
+  16:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler
+  17:../lgg/queue/queue.c ****  *   @ retval: errcode
+  18:../lgg/queue/queue.c ****  *
+  19:../lgg/queue/queue.c ****  */
+  20:../lgg/queue/queue.c **** uint8_t lgg_queue_init(LGG_Queue_TypeDef* queue)
+  21:../lgg/queue/queue.c **** {
+  28              	 .loc 1 21 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32 0000 80B5     	 push {r7,lr}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 8
+  35              	 .cfi_offset 7,-8
+  36              	 .cfi_offset 14,-4
+  37 0002 82B0     	 sub sp,sp,#8
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+  22:../lgg/queue/queue.c **** 	if(queue == NULL)
+  44              	 .loc 1 22 0
+  45 0008 7B68     	 ldr r3,[r7,#4]
+  46 000a 002B     	 cmp r3,#0
+  47 000c 09D1     	 bne .L2
+  23:../lgg/queue/queue.c **** 	{
+  24:../lgg/queue/queue.c **** 		queue = (LGG_Queue_TypeDef*) malloc(sizeof(LGG_Queue_TypeDef));
+  48              	 .loc 1 24 0
+  49 000e 3420     	 movs r0,#52
+  50 0010 FFF7FEFF 	 bl malloc
+  51 0014 0346     	 mov r3,r0
+  52 0016 7B60     	 str r3,[r7,#4]
+  25:../lgg/queue/queue.c **** 		if(queue == NULL)
+  53              	 .loc 1 25 0
+  54 0018 7B68     	 ldr r3,[r7,#4]
+  55 001a 002B     	 cmp r3,#0
+  56 001c 01D1     	 bne .L2
+  26:../lgg/queue/queue.c **** 		{
+  27:../lgg/queue/queue.c **** 			return LGG_QUEUE_ERR_MALLOC;
+  57              	 .loc 1 27 0
+  58 001e FF23     	 movs r3,#255
+  59 0020 08E0     	 b .L3
+  60              	.L2:
+  28:../lgg/queue/queue.c **** 		}
+  29:../lgg/queue/queue.c **** 	}
+  30:../lgg/queue/queue.c **** 	queue->head = 0;
+  61              	 .loc 1 30 0
+  62 0022 7B68     	 ldr r3,[r7,#4]
+  63 0024 0022     	 movs r2,#0
+  64 0026 83F83020 	 strb r2,[r3,#48]
+  31:../lgg/queue/queue.c **** 	queue->tail = 0;
+  65              	 .loc 1 31 0
+  66 002a 7B68     	 ldr r3,[r7,#4]
+  67 002c 0022     	 movs r2,#0
+  68 002e 83F83120 	 strb r2,[r3,#49]
+  32:../lgg/queue/queue.c **** 	return LGG_QUEUE_OK;
+  69              	 .loc 1 32 0
+  70 0032 0023     	 movs r3,#0
+  71              	.L3:
+  33:../lgg/queue/queue.c **** }
+  72              	 .loc 1 33 0
+  73 0034 1846     	 mov r0,r3
+  74 0036 0837     	 adds r7,r7,#8
+  75              	.LCFI3:
+  76              	 .cfi_def_cfa_offset 8
+  77 0038 BD46     	 mov sp,r7
+  78              	.LCFI4:
+  79              	 .cfi_def_cfa_register 13
+  80              	 
+  81 003a 80BD     	 pop {r7,pc}
+  82              	 .cfi_endproc
+  83              	.LFE132:
+  85              	 .section .text.lgg_queue_isEmpty,"ax",%progbits
+  86              	 .align 2
+  87              	 .global lgg_queue_isEmpty
+  88              	 .thumb
+  89              	 .thumb_func
+  91              	lgg_queue_isEmpty:
+  92              	.LFB133:
+  34:../lgg/queue/queue.c **** 
+  35:../lgg/queue/queue.c **** /*
+  36:../lgg/queue/queue.c ****  *	 Check if queue is empty
+  37:../lgg/queue/queue.c ****  *   @ Brief : Check if queue is empty
+  38:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler
+  39:../lgg/queue/queue.c ****  *   @ retval: errcode
+  40:../lgg/queue/queue.c ****  *
+  41:../lgg/queue/queue.c ****  */
+  42:../lgg/queue/queue.c **** uint8_t lgg_queue_isEmpty(LGG_Queue_TypeDef* queue)
+  43:../lgg/queue/queue.c **** {
+  93              	 .loc 1 43 0
+  94              	 .cfi_startproc
+  95              	 
+  96              	 
+  97              	 
+  98 0000 80B4     	 push {r7}
+  99              	.LCFI5:
+ 100              	 .cfi_def_cfa_offset 4
+ 101              	 .cfi_offset 7,-4
+ 102 0002 83B0     	 sub sp,sp,#12
+ 103              	.LCFI6:
+ 104              	 .cfi_def_cfa_offset 16
+ 105 0004 00AF     	 add r7,sp,#0
+ 106              	.LCFI7:
+ 107              	 .cfi_def_cfa_register 7
+ 108 0006 7860     	 str r0,[r7,#4]
+  44:../lgg/queue/queue.c **** 	if(queue->head == queue->tail)
+ 109              	 .loc 1 44 0
+ 110 0008 7B68     	 ldr r3,[r7,#4]
+ 111 000a 93F83020 	 ldrb r2,[r3,#48]
+ 112 000e 7B68     	 ldr r3,[r7,#4]
+ 113 0010 93F83130 	 ldrb r3,[r3,#49]
+ 114 0014 9A42     	 cmp r2,r3
+ 115 0016 01D1     	 bne .L5
+  45:../lgg/queue/queue.c **** 	{
+  46:../lgg/queue/queue.c **** 		return LGG_QUEUE_EMPTY;
+ 116              	 .loc 1 46 0
+ 117 0018 1123     	 movs r3,#17
+ 118 001a 00E0     	 b .L6
+ 119              	.L5:
+  47:../lgg/queue/queue.c **** 	}
+  48:../lgg/queue/queue.c **** 	else
+  49:../lgg/queue/queue.c **** 	{
+  50:../lgg/queue/queue.c **** 		return LGG_QUEUE_NONEMPTY;
+ 120              	 .loc 1 50 0
+ 121 001c EE23     	 movs r3,#238
+ 122              	.L6:
+  51:../lgg/queue/queue.c **** 	}
+  52:../lgg/queue/queue.c **** }
+ 123              	 .loc 1 52 0
+ 124 001e 1846     	 mov r0,r3
+ 125 0020 0C37     	 adds r7,r7,#12
+ 126              	.LCFI8:
+ 127              	 .cfi_def_cfa_offset 4
+ 128 0022 BD46     	 mov sp,r7
+ 129              	.LCFI9:
+ 130              	 .cfi_def_cfa_register 13
+ 131              	 
+ 132 0024 5DF8047B 	 ldr r7,[sp],#4
+ 133              	.LCFI10:
+ 134              	 .cfi_restore 7
+ 135              	 .cfi_def_cfa_offset 0
+ 136 0028 7047     	 bx lr
+ 137              	 .cfi_endproc
+ 138              	.LFE133:
+ 140 002a 00BF     	 .section .text.lgg_queue_IsFull,"ax",%progbits
+ 141              	 .align 2
+ 142              	 .global lgg_queue_IsFull
+ 143              	 .thumb
+ 144              	 .thumb_func
+ 146              	lgg_queue_IsFull:
+ 147              	.LFB134:
+  53:../lgg/queue/queue.c **** 
+  54:../lgg/queue/queue.c **** /*
+  55:../lgg/queue/queue.c ****  *	 Check if queue is full
+  56:../lgg/queue/queue.c ****  *   @ Brief : Check if queue is full
+  57:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler
+  58:../lgg/queue/queue.c ****  *   @ retval: errcode
+  59:../lgg/queue/queue.c ****  *
+  60:../lgg/queue/queue.c ****  */
+  61:../lgg/queue/queue.c **** uint8_t lgg_queue_IsFull(LGG_Queue_TypeDef* queue)
+  62:../lgg/queue/queue.c **** {
+ 148              	 .loc 1 62 0
+ 149              	 .cfi_startproc
+ 150              	 
+ 151              	 
+ 152              	 
+ 153 0000 80B4     	 push {r7}
+ 154              	.LCFI11:
+ 155              	 .cfi_def_cfa_offset 4
+ 156              	 .cfi_offset 7,-4
+ 157 0002 83B0     	 sub sp,sp,#12
+ 158              	.LCFI12:
+ 159              	 .cfi_def_cfa_offset 16
+ 160 0004 00AF     	 add r7,sp,#0
+ 161              	.LCFI13:
+ 162              	 .cfi_def_cfa_register 7
+ 163 0006 7860     	 str r0,[r7,#4]
+  63:../lgg/queue/queue.c **** 	if( (queue->tail + 1) % LGG_QUEUE_SIZE  == queue->head )
+ 164              	 .loc 1 63 0
+ 165 0008 7B68     	 ldr r3,[r7,#4]
+ 166 000a 93F83130 	 ldrb r3,[r3,#49]
+ 167 000e 591C     	 adds r1,r3,#1
+ 168 0010 0C4B     	 ldr r3,.L10
+ 169 0012 83FB0123 	 smull r2,r3,r3,r1
+ 170 0016 5A10     	 asrs r2,r3,#1
+ 171 0018 CB17     	 asrs r3,r1,#31
+ 172 001a D21A     	 subs r2,r2,r3
+ 173 001c 1346     	 mov r3,r2
+ 174 001e 5B00     	 lsls r3,r3,#1
+ 175 0020 1344     	 add r3,r3,r2
+ 176 0022 9B00     	 lsls r3,r3,#2
+ 177 0024 CA1A     	 subs r2,r1,r3
+ 178 0026 7B68     	 ldr r3,[r7,#4]
+ 179 0028 93F83030 	 ldrb r3,[r3,#48]
+ 180 002c 9A42     	 cmp r2,r3
+ 181 002e 01D1     	 bne .L8
+  64:../lgg/queue/queue.c **** 	{
+  65:../lgg/queue/queue.c **** 		return LGG_QUEUE_FULL;
+ 182              	 .loc 1 65 0
+ 183 0030 2223     	 movs r3,#34
+ 184 0032 00E0     	 b .L9
+ 185              	.L8:
+  66:../lgg/queue/queue.c **** 	}
+  67:../lgg/queue/queue.c **** 	else
+  68:../lgg/queue/queue.c **** 	{
+  69:../lgg/queue/queue.c **** 		return LGG_QUEUE_NONFULL;
+ 186              	 .loc 1 69 0
+ 187 0034 DD23     	 movs r3,#221
+ 188              	.L9:
+  70:../lgg/queue/queue.c **** 	}
+  71:../lgg/queue/queue.c **** }
+ 189              	 .loc 1 71 0
+ 190 0036 1846     	 mov r0,r3
+ 191 0038 0C37     	 adds r7,r7,#12
+ 192              	.LCFI14:
+ 193              	 .cfi_def_cfa_offset 4
+ 194 003a BD46     	 mov sp,r7
+ 195              	.LCFI15:
+ 196              	 .cfi_def_cfa_register 13
+ 197              	 
+ 198 003c 5DF8047B 	 ldr r7,[sp],#4
+ 199              	.LCFI16:
+ 200              	 .cfi_restore 7
+ 201              	 .cfi_def_cfa_offset 0
+ 202 0040 7047     	 bx lr
+ 203              	.L11:
+ 204 0042 00BF     	 .align 2
+ 205              	.L10:
+ 206 0044 ABAAAA2A 	 .word 715827883
+ 207              	 .cfi_endproc
+ 208              	.LFE134:
+ 210              	 .section .text.lgg_queue_push_data,"ax",%progbits
+ 211              	 .align 2
+ 212              	 .global lgg_queue_push_data
+ 213              	 .thumb
+ 214              	 .thumb_func
+ 216              	lgg_queue_push_data:
+ 217              	.LFB135:
+  72:../lgg/queue/queue.c **** 
+  73:../lgg/queue/queue.c **** /*
+  74:../lgg/queue/queue.c ****  *	 Push one data to queue
+  75:../lgg/queue/queue.c ****  *   @ Brief : Push one data to queue
+  76:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler, data
+  77:../lgg/queue/queue.c ****  *   @ retval: errcode
+  78:../lgg/queue/queue.c ****  *
+  79:../lgg/queue/queue.c ****  */
+  80:../lgg/queue/queue.c **** uint8_t lgg_queue_push_data(LGG_Queue_TypeDef* queue, LGG_QUEUE_DATA_TYPE data)
+  81:../lgg/queue/queue.c **** {
+ 218              	 .loc 1 81 0
+ 219              	 .cfi_startproc
+ 220              	 
+ 221              	 
+ 222 0000 80B5     	 push {r7,lr}
+ 223              	.LCFI17:
+ 224              	 .cfi_def_cfa_offset 8
+ 225              	 .cfi_offset 7,-8
+ 226              	 .cfi_offset 14,-4
+ 227 0002 82B0     	 sub sp,sp,#8
+ 228              	.LCFI18:
+ 229              	 .cfi_def_cfa_offset 16
+ 230 0004 00AF     	 add r7,sp,#0
+ 231              	.LCFI19:
+ 232              	 .cfi_def_cfa_register 7
+ 233 0006 7860     	 str r0,[r7,#4]
+ 234 0008 3960     	 str r1,[r7]
+  82:../lgg/queue/queue.c **** 	if(lgg_queue_isFull(queue) == LGG_QUEUE_FULL)
+ 235              	 .loc 1 82 0
+ 236 000a 7868     	 ldr r0,[r7,#4]
+ 237 000c FFF7FEFF 	 bl lgg_queue_isFull
+ 238 0010 0346     	 mov r3,r0
+ 239 0012 222B     	 cmp r3,#34
+ 240 0014 01D1     	 bne .L13
+  83:../lgg/queue/queue.c **** 	{
+  84:../lgg/queue/queue.c **** 		return LGG_QUEUE_FULL;
+ 241              	 .loc 1 84 0
+ 242 0016 2223     	 movs r3,#34
+ 243 0018 1BE0     	 b .L14
+ 244              	.L13:
+  85:../lgg/queue/queue.c **** 	}
+  86:../lgg/queue/queue.c **** 	else
+  87:../lgg/queue/queue.c **** 	{
+  88:../lgg/queue/queue.c **** 		queue->tail = (queue->tail + 1) % LGG_QUEUE_SIZE;
+ 245              	 .loc 1 88 0
+ 246 001a 7B68     	 ldr r3,[r7,#4]
+ 247 001c 93F83130 	 ldrb r3,[r3,#49]
+ 248 0020 5A1C     	 adds r2,r3,#1
+ 249 0022 0E4B     	 ldr r3,.L15
+ 250 0024 83FB0213 	 smull r1,r3,r3,r2
+ 251 0028 5910     	 asrs r1,r3,#1
+ 252 002a D317     	 asrs r3,r2,#31
+ 253 002c C91A     	 subs r1,r1,r3
+ 254 002e 0B46     	 mov r3,r1
+ 255 0030 5B00     	 lsls r3,r3,#1
+ 256 0032 0B44     	 add r3,r3,r1
+ 257 0034 9B00     	 lsls r3,r3,#2
+ 258 0036 D11A     	 subs r1,r2,r3
+ 259 0038 CAB2     	 uxtb r2,r1
+ 260 003a 7B68     	 ldr r3,[r7,#4]
+ 261 003c 83F83120 	 strb r2,[r3,#49]
+  89:../lgg/queue/queue.c **** 		queue->data[queue->tail] = data;
+ 262              	 .loc 1 89 0
+ 263 0040 7B68     	 ldr r3,[r7,#4]
+ 264 0042 93F83130 	 ldrb r3,[r3,#49]
+ 265 0046 1946     	 mov r1,r3
+ 266 0048 7B68     	 ldr r3,[r7,#4]
+ 267 004a 3A68     	 ldr r2,[r7]
+ 268 004c 43F82120 	 str r2,[r3,r1,lsl#2]
+  90:../lgg/queue/queue.c **** 		return LGG_QUEUE_OK;
+ 269              	 .loc 1 90 0
+ 270 0050 0023     	 movs r3,#0
+ 271              	.L14:
+  91:../lgg/queue/queue.c **** 	}
+  92:../lgg/queue/queue.c **** }
+ 272              	 .loc 1 92 0
+ 273 0052 1846     	 mov r0,r3
+ 274 0054 0837     	 adds r7,r7,#8
+ 275              	.LCFI20:
+ 276              	 .cfi_def_cfa_offset 8
+ 277 0056 BD46     	 mov sp,r7
+ 278              	.LCFI21:
+ 279              	 .cfi_def_cfa_register 13
+ 280              	 
+ 281 0058 80BD     	 pop {r7,pc}
+ 282              	.L16:
+ 283 005a 00BF     	 .align 2
+ 284              	.L15:
+ 285 005c ABAAAA2A 	 .word 715827883
+ 286              	 .cfi_endproc
+ 287              	.LFE135:
+ 289              	 .section .text.lgg_queue_pop_data,"ax",%progbits
+ 290              	 .align 2
+ 291              	 .global lgg_queue_pop_data
+ 292              	 .thumb
+ 293              	 .thumb_func
+ 295              	lgg_queue_pop_data:
+ 296              	.LFB136:
+  93:../lgg/queue/queue.c **** 
+  94:../lgg/queue/queue.c **** /*
+  95:../lgg/queue/queue.c ****  *	 Pop one data from queue
+  96:../lgg/queue/queue.c ****  *   @ Brief : Pop one data from queue
+  97:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler, pointer to data
+  98:../lgg/queue/queue.c ****  *   @ retval: errcode
+  99:../lgg/queue/queue.c ****  *
+ 100:../lgg/queue/queue.c ****  */
+ 101:../lgg/queue/queue.c **** uint8_t lgg_queue_pop_data(LGG_Queue_TypeDef* queue, LGG_QUEUE_DATA_TYPE* data)
+ 102:../lgg/queue/queue.c **** {
+ 297              	 .loc 1 102 0
+ 298              	 .cfi_startproc
+ 299              	 
+ 300              	 
+ 301 0000 80B5     	 push {r7,lr}
+ 302              	.LCFI22:
+ 303              	 .cfi_def_cfa_offset 8
+ 304              	 .cfi_offset 7,-8
+ 305              	 .cfi_offset 14,-4
+ 306 0002 82B0     	 sub sp,sp,#8
+ 307              	.LCFI23:
+ 308              	 .cfi_def_cfa_offset 16
+ 309 0004 00AF     	 add r7,sp,#0
+ 310              	.LCFI24:
+ 311              	 .cfi_def_cfa_register 7
+ 312 0006 7860     	 str r0,[r7,#4]
+ 313 0008 3960     	 str r1,[r7]
+ 103:../lgg/queue/queue.c **** 	if(lgg_queue_isEmpty(queue) == LGG_QUEUE_EMPTY)
+ 314              	 .loc 1 103 0
+ 315 000a 7868     	 ldr r0,[r7,#4]
+ 316 000c FFF7FEFF 	 bl lgg_queue_isEmpty
+ 317 0010 0346     	 mov r3,r0
+ 318 0012 112B     	 cmp r3,#17
+ 319 0014 01D1     	 bne .L18
+ 104:../lgg/queue/queue.c **** 	{
+ 105:../lgg/queue/queue.c **** 		return LGG_QUEUE_EMPTY;
+ 320              	 .loc 1 105 0
+ 321 0016 1123     	 movs r3,#17
+ 322 0018 1CE0     	 b .L19
+ 323              	.L18:
+ 106:../lgg/queue/queue.c **** 	}
+ 107:../lgg/queue/queue.c **** 	else
+ 108:../lgg/queue/queue.c **** 	{
+ 109:../lgg/queue/queue.c **** 		queue->head = (queue->head + 1) % LGG_QUEUE_SIZE;
+ 324              	 .loc 1 109 0
+ 325 001a 7B68     	 ldr r3,[r7,#4]
+ 326 001c 93F83030 	 ldrb r3,[r3,#48]
+ 327 0020 5A1C     	 adds r2,r3,#1
+ 328 0022 0E4B     	 ldr r3,.L20
+ 329 0024 83FB0213 	 smull r1,r3,r3,r2
+ 330 0028 5910     	 asrs r1,r3,#1
+ 331 002a D317     	 asrs r3,r2,#31
+ 332 002c C91A     	 subs r1,r1,r3
+ 333 002e 0B46     	 mov r3,r1
+ 334 0030 5B00     	 lsls r3,r3,#1
+ 335 0032 0B44     	 add r3,r3,r1
+ 336 0034 9B00     	 lsls r3,r3,#2
+ 337 0036 D11A     	 subs r1,r2,r3
+ 338 0038 CAB2     	 uxtb r2,r1
+ 339 003a 7B68     	 ldr r3,[r7,#4]
+ 340 003c 83F83020 	 strb r2,[r3,#48]
+ 110:../lgg/queue/queue.c **** 		*data = queue->data[queue->head];
+ 341              	 .loc 1 110 0
+ 342 0040 7B68     	 ldr r3,[r7,#4]
+ 343 0042 93F83030 	 ldrb r3,[r3,#48]
+ 344 0046 1A46     	 mov r2,r3
+ 345 0048 7B68     	 ldr r3,[r7,#4]
+ 346 004a 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 347 004e 3B68     	 ldr r3,[r7]
+ 348 0050 1A60     	 str r2,[r3]
+ 111:../lgg/queue/queue.c **** 		return LGG_QUEUE_OK;
+ 349              	 .loc 1 111 0
+ 350 0052 0023     	 movs r3,#0
+ 351              	.L19:
+ 112:../lgg/queue/queue.c **** 	}
+ 113:../lgg/queue/queue.c **** }
+ 352              	 .loc 1 113 0
+ 353 0054 1846     	 mov r0,r3
+ 354 0056 0837     	 adds r7,r7,#8
+ 355              	.LCFI25:
+ 356              	 .cfi_def_cfa_offset 8
+ 357 0058 BD46     	 mov sp,r7
+ 358              	.LCFI26:
+ 359              	 .cfi_def_cfa_register 13
+ 360              	 
+ 361 005a 80BD     	 pop {r7,pc}
+ 362              	.L21:
+ 363              	 .align 2
+ 364              	.L20:
+ 365 005c ABAAAA2A 	 .word 715827883
+ 366              	 .cfi_endproc
+ 367              	.LFE136:
+ 369              	 .section .text.lgg_queue_get_head_data,"ax",%progbits
+ 370              	 .align 2
+ 371              	 .global lgg_queue_get_head_data
+ 372              	 .thumb
+ 373              	 .thumb_func
+ 375              	lgg_queue_get_head_data:
+ 376              	.LFB137:
+ 114:../lgg/queue/queue.c **** 
+ 115:../lgg/queue/queue.c **** /*
+ 116:../lgg/queue/queue.c ****  *	 Get Head data from queue, no POP
+ 117:../lgg/queue/queue.c ****  *   @ Brief : Get Head data from queue but not pop it
+ 118:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler, pointer to data
+ 119:../lgg/queue/queue.c ****  *   @ retval: errcode
+ 120:../lgg/queue/queue.c ****  *
+ 121:../lgg/queue/queue.c ****  */
+ 122:../lgg/queue/queue.c **** uint8_t lgg_queue_get_head_data(LGG_Queue_TypeDef* queue, LGG_QUEUE_DATA_TYPE* data)
+ 123:../lgg/queue/queue.c **** {
+ 377              	 .loc 1 123 0
+ 378              	 .cfi_startproc
+ 379              	 
+ 380              	 
+ 381 0000 80B5     	 push {r7,lr}
+ 382              	.LCFI27:
+ 383              	 .cfi_def_cfa_offset 8
+ 384              	 .cfi_offset 7,-8
+ 385              	 .cfi_offset 14,-4
+ 386 0002 82B0     	 sub sp,sp,#8
+ 387              	.LCFI28:
+ 388              	 .cfi_def_cfa_offset 16
+ 389 0004 00AF     	 add r7,sp,#0
+ 390              	.LCFI29:
+ 391              	 .cfi_def_cfa_register 7
+ 392 0006 7860     	 str r0,[r7,#4]
+ 393 0008 3960     	 str r1,[r7]
+ 124:../lgg/queue/queue.c **** 	if(lgg_queue_isEmpty(queue) == LGG_QUEUE_EMPTY)
+ 394              	 .loc 1 124 0
+ 395 000a 7868     	 ldr r0,[r7,#4]
+ 396 000c FFF7FEFF 	 bl lgg_queue_isEmpty
+ 397 0010 0346     	 mov r3,r0
+ 398 0012 112B     	 cmp r3,#17
+ 399 0014 01D1     	 bne .L23
+ 125:../lgg/queue/queue.c **** 	{
+ 126:../lgg/queue/queue.c **** 		return LGG_QUEUE_EMPTY;
+ 400              	 .loc 1 126 0
+ 401 0016 1123     	 movs r3,#17
+ 402 0018 14E0     	 b .L24
+ 403              	.L23:
+ 127:../lgg/queue/queue.c **** 	}
+ 128:../lgg/queue/queue.c **** 	else
+ 129:../lgg/queue/queue.c **** 	{
+ 130:../lgg/queue/queue.c **** 		*data = queue->data[(queue->head + 1) % LGG_QUEUE_SIZE];
+ 404              	 .loc 1 130 0
+ 405 001a 7B68     	 ldr r3,[r7,#4]
+ 406 001c 93F83030 	 ldrb r3,[r3,#48]
+ 407 0020 591C     	 adds r1,r3,#1
+ 408 0022 0A4B     	 ldr r3,.L25
+ 409 0024 83FB0123 	 smull r2,r3,r3,r1
+ 410 0028 5A10     	 asrs r2,r3,#1
+ 411 002a CB17     	 asrs r3,r1,#31
+ 412 002c D21A     	 subs r2,r2,r3
+ 413 002e 1346     	 mov r3,r2
+ 414 0030 5B00     	 lsls r3,r3,#1
+ 415 0032 1344     	 add r3,r3,r2
+ 416 0034 9B00     	 lsls r3,r3,#2
+ 417 0036 CA1A     	 subs r2,r1,r3
+ 418 0038 7B68     	 ldr r3,[r7,#4]
+ 419 003a 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 420 003e 3B68     	 ldr r3,[r7]
+ 421 0040 1A60     	 str r2,[r3]
+ 131:../lgg/queue/queue.c **** 		return LGG_QUEUE_OK;
+ 422              	 .loc 1 131 0
+ 423 0042 0023     	 movs r3,#0
+ 424              	.L24:
+ 132:../lgg/queue/queue.c **** 	}
+ 133:../lgg/queue/queue.c **** }
+ 425              	 .loc 1 133 0
+ 426 0044 1846     	 mov r0,r3
+ 427 0046 0837     	 adds r7,r7,#8
+ 428              	.LCFI30:
+ 429              	 .cfi_def_cfa_offset 8
+ 430 0048 BD46     	 mov sp,r7
+ 431              	.LCFI31:
+ 432              	 .cfi_def_cfa_register 13
+ 433              	 
+ 434 004a 80BD     	 pop {r7,pc}
+ 435              	.L26:
+ 436              	 .align 2
+ 437              	.L25:
+ 438 004c ABAAAA2A 	 .word 715827883
+ 439              	 .cfi_endproc
+ 440              	.LFE137:
+ 442              	 .section .text.lgg_queue_clear,"ax",%progbits
+ 443              	 .align 2
+ 444              	 .global lgg_queue_clear
+ 445              	 .thumb
+ 446              	 .thumb_func
+ 448              	lgg_queue_clear:
+ 449              	.LFB138:
+ 134:../lgg/queue/queue.c **** 
+ 135:../lgg/queue/queue.c **** /*
+ 136:../lgg/queue/queue.c ****  *	 Clear data from queue
+ 137:../lgg/queue/queue.c ****  *   @ Brief : Clear data from queue
+ 138:../lgg/queue/queue.c ****  *   @ param : pointer to queue handler
+ 139:../lgg/queue/queue.c ****  *   @ retval: errcode
+ 140:../lgg/queue/queue.c ****  *
+ 141:../lgg/queue/queue.c ****  */
+ 142:../lgg/queue/queue.c **** uint8_t lgg_queue_clear(LGG_Queue_TypeDef* queue)
+ 143:../lgg/queue/queue.c **** {
+ 450              	 .loc 1 143 0
+ 451              	 .cfi_startproc
+ 452              	 
+ 453              	 
+ 454              	 
+ 455 0000 80B4     	 push {r7}
+ 456              	.LCFI32:
+ 457              	 .cfi_def_cfa_offset 4
+ 458              	 .cfi_offset 7,-4
+ 459 0002 83B0     	 sub sp,sp,#12
+ 460              	.LCFI33:
+ 461              	 .cfi_def_cfa_offset 16
+ 462 0004 00AF     	 add r7,sp,#0
+ 463              	.LCFI34:
+ 464              	 .cfi_def_cfa_register 7
+ 465 0006 7860     	 str r0,[r7,#4]
+ 144:../lgg/queue/queue.c **** 	queue->head = 0;
+ 466              	 .loc 1 144 0
+ 467 0008 7B68     	 ldr r3,[r7,#4]
+ 468 000a 0022     	 movs r2,#0
+ 469 000c 83F83020 	 strb r2,[r3,#48]
+ 145:../lgg/queue/queue.c **** 	queue->tail = 0;
+ 470              	 .loc 1 145 0
+ 471 0010 7B68     	 ldr r3,[r7,#4]
+ 472 0012 0022     	 movs r2,#0
+ 473 0014 83F83120 	 strb r2,[r3,#49]
+ 146:../lgg/queue/queue.c **** 	return LGG_QUEUE_OK;
+ 474              	 .loc 1 146 0
+ 475 0018 0023     	 movs r3,#0
+ 147:../lgg/queue/queue.c **** }
+ 476              	 .loc 1 147 0
+ 477 001a 1846     	 mov r0,r3
+ 478 001c 0C37     	 adds r7,r7,#12
+ 479              	.LCFI35:
+ 480              	 .cfi_def_cfa_offset 4
+ 481 001e BD46     	 mov sp,r7
+ 482              	.LCFI36:
+ 483              	 .cfi_def_cfa_register 13
+ 484              	 
+ 485 0020 5DF8047B 	 ldr r7,[sp],#4
+ 486              	.LCFI37:
+ 487              	 .cfi_restore 7
+ 488              	 .cfi_def_cfa_offset 0
+ 489 0024 7047     	 bx lr
+ 490              	 .cfi_endproc
+ 491              	.LFE138:
+ 493 0026 00BF     	 .text
+ 494              	.Letext0:
+ 495              	 .file 2 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 496              	 .file 3 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 497              	 .file 4 "../lgg/queue/queue.h"
+ 498              	 .file 5 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/cmsis_gcc.h"
+ 499              	 .file 6 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 queue.c
+    {standard input}:20     .text.lgg_queue_init:00000000 $t
+    {standard input}:25     .text.lgg_queue_init:00000000 lgg_queue_init
+    {standard input}:86     .text.lgg_queue_isEmpty:00000000 $t
+    {standard input}:91     .text.lgg_queue_isEmpty:00000000 lgg_queue_isEmpty
+    {standard input}:141    .text.lgg_queue_IsFull:00000000 $t
+    {standard input}:146    .text.lgg_queue_IsFull:00000000 lgg_queue_IsFull
+    {standard input}:206    .text.lgg_queue_IsFull:00000044 $d
+    {standard input}:211    .text.lgg_queue_push_data:00000000 $t
+    {standard input}:216    .text.lgg_queue_push_data:00000000 lgg_queue_push_data
+    {standard input}:285    .text.lgg_queue_push_data:0000005c $d
+    {standard input}:290    .text.lgg_queue_pop_data:00000000 $t
+    {standard input}:295    .text.lgg_queue_pop_data:00000000 lgg_queue_pop_data
+    {standard input}:365    .text.lgg_queue_pop_data:0000005c $d
+    {standard input}:370    .text.lgg_queue_get_head_data:00000000 $t
+    {standard input}:375    .text.lgg_queue_get_head_data:00000000 lgg_queue_get_head_data
+    {standard input}:438    .text.lgg_queue_get_head_data:0000004c $d
+    {standard input}:443    .text.lgg_queue_clear:00000000 $t
+    {standard input}:448    .text.lgg_queue_clear:00000000 lgg_queue_clear
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+malloc
+lgg_queue_isFull

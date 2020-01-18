@@ -1,0 +1,1311 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "mpu6050.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.lgg_gyro_read_register_byte,"ax",%progbits
+  20              	 .align 2
+  21              	 .global lgg_gyro_read_register_byte
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	lgg_gyro_read_register_byte:
+  26              	.LFB264:
+  27              	 .file 1 "../lgg/gyro/mpu6050.c"
+   1:../lgg/gyro/mpu6050.c **** #include "mpu6050.h"
+   2:../lgg/gyro/mpu6050.c **** 
+   3:../lgg/gyro/mpu6050.c **** /*
+   4:../lgg/gyro/mpu6050.c ****  *   @ Description: ARM Cortex-M based MPU6050 Driverlib
+   5:../lgg/gyro/mpu6050.c ****  *   @ Author:      HIT-HanBo
+   6:../lgg/gyro/mpu6050.c ****  *   @ History:     2019-XX-XX  Demo
+   7:../lgg/gyro/mpu6050.c ****  *   				2020-01-18  Add Comments
+   8:../lgg/gyro/mpu6050.c **** */
+   9:../lgg/gyro/mpu6050.c **** 
+  10:../lgg/gyro/mpu6050.c **** /*
+  11:../lgg/gyro/mpu6050.c ****  * 		ATTENTION! some fake MPU6050 module does not support
+  12:../lgg/gyro/mpu6050.c ****  * 		burst transmission, try to read/write byte by byte
+  13:../lgg/gyro/mpu6050.c ****  * */
+  14:../lgg/gyro/mpu6050.c **** 
+  15:../lgg/gyro/mpu6050.c **** void lgg_gyro_read_register_byte(uint8_t address, uint8_t* data)
+  16:../lgg/gyro/mpu6050.c **** {
+  28              	 .loc 1 16 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32 0000 80B5     	 push {r7,lr}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 8
+  35              	 .cfi_offset 7,-8
+  36              	 .cfi_offset 14,-4
+  37 0002 82B0     	 sub sp,sp,#8
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 0346     	 mov r3,r0
+  44 0008 3960     	 str r1,[r7]
+  45 000a FB71     	 strb r3,[r7,#7]
+  17:../lgg/gyro/mpu6050.c **** 	/* send address (W) */
+  18:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+  46              	 .loc 1 18 0
+  47 000c 254B     	 ldr r3,.L6
+  48 000e 4FF40072 	 mov r2,#512
+  49 0012 DA64     	 str r2,[r3,#76]
+  19:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStart(XMC_USIC2_CH0, 0xD0, XMC_I2C_CH_CMD_WRITE);
+  50              	 .loc 1 19 0
+  51 0014 2348     	 ldr r0,.L6
+  52 0016 D021     	 movs r1,#208
+  53 0018 0022     	 movs r2,#0
+  54 001a FFF7FEFF 	 bl XMC_I2C_CH_MasterStart
+  20:../lgg/gyro/mpu6050.c **** 	while(
+  55              	 .loc 1 20 0
+  56 001e 00BF     	 nop
+  57              	.L2:
+  21:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+  58              	 .loc 1 21 0 discriminator 1
+  59 0020 204B     	 ldr r3,.L6
+  60 0022 9B6C     	 ldr r3,[r3,#72]
+  61 0024 03F40073 	 and r3,r3,#512
+  20:../lgg/gyro/mpu6050.c **** 	while(
+  62              	 .loc 1 20 0 discriminator 1
+  63 0028 002B     	 cmp r3,#0
+  64 002a F9D0     	 beq .L2
+  22:../lgg/gyro/mpu6050.c **** 		);
+  23:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+  65              	 .loc 1 23 0
+  66 002c 1D4B     	 ldr r3,.L6
+  67 002e 4FF40072 	 mov r2,#512
+  68 0032 DA64     	 str r2,[r3,#76]
+  24:../lgg/gyro/mpu6050.c **** 	/* send REGISTER address */
+  25:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, address);
+  69              	 .loc 1 25 0
+  70 0034 FB79     	 ldrb r3,[r7,#7]
+  71 0036 1B48     	 ldr r0,.L6
+  72 0038 1946     	 mov r1,r3
+  73 003a FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+  26:../lgg/gyro/mpu6050.c **** 	while(
+  74              	 .loc 1 26 0
+  75 003e 00BF     	 nop
+  76              	.L3:
+  27:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+  77              	 .loc 1 27 0 discriminator 1
+  78 0040 184B     	 ldr r3,.L6
+  79 0042 9B6C     	 ldr r3,[r3,#72]
+  80 0044 03F40073 	 and r3,r3,#512
+  26:../lgg/gyro/mpu6050.c **** 	while(
+  81              	 .loc 1 26 0 discriminator 1
+  82 0048 002B     	 cmp r3,#0
+  83 004a F9D0     	 beq .L3
+  28:../lgg/gyro/mpu6050.c **** 		);
+  29:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+  84              	 .loc 1 29 0
+  85 004c 154B     	 ldr r3,.L6
+  86 004e 4FF40072 	 mov r2,#512
+  87 0052 DA64     	 str r2,[r3,#76]
+  30:../lgg/gyro/mpu6050.c **** 	/* start read */
+  31:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterRepeatedStart(XMC_USIC2_CH0, 0xD1, XMC_I2C_CH_CMD_READ);
+  88              	 .loc 1 31 0
+  89 0054 1348     	 ldr r0,.L6
+  90 0056 D121     	 movs r1,#209
+  91 0058 0122     	 movs r2,#1
+  92 005a FFF7FEFF 	 bl XMC_I2C_CH_MasterRepeatedStart
+  32:../lgg/gyro/mpu6050.c **** 	while(
+  93              	 .loc 1 32 0
+  94 005e 00BF     	 nop
+  95              	.L4:
+  33:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+  96              	 .loc 1 33 0 discriminator 1
+  97 0060 104B     	 ldr r3,.L6
+  98 0062 9B6C     	 ldr r3,[r3,#72]
+  99 0064 03F40073 	 and r3,r3,#512
+  32:../lgg/gyro/mpu6050.c **** 	while(
+ 100              	 .loc 1 32 0 discriminator 1
+ 101 0068 002B     	 cmp r3,#0
+ 102 006a F9D0     	 beq .L4
+  34:../lgg/gyro/mpu6050.c **** 		);
+  35:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9 | 1 << 14 | 1 << 15);
+ 103              	 .loc 1 35 0
+ 104 006c 0D4B     	 ldr r3,.L6
+ 105 006e 4FF44242 	 mov r2,#49664
+ 106 0072 DA64     	 str r2,[r3,#76]
+  36:../lgg/gyro/mpu6050.c **** 	/* receive */
+  37:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterReceiveNack(XMC_USIC2_CH0);
+ 107              	 .loc 1 37 0
+ 108 0074 0B48     	 ldr r0,.L6
+ 109 0076 FFF7FEFF 	 bl XMC_I2C_CH_MasterReceiveNack
+  38:../lgg/gyro/mpu6050.c **** 	while(
+ 110              	 .loc 1 38 0
+ 111 007a 00BF     	 nop
+ 112              	.L5:
+  39:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 14 | 1 << 15)) == 0
+ 113              	 .loc 1 39 0 discriminator 1
+ 114 007c 094B     	 ldr r3,.L6
+ 115 007e 9B6C     	 ldr r3,[r3,#72]
+ 116 0080 03F44043 	 and r3,r3,#49152
+  38:../lgg/gyro/mpu6050.c **** 	while(
+ 117              	 .loc 1 38 0 discriminator 1
+ 118 0084 002B     	 cmp r3,#0
+ 119 0086 F9D0     	 beq .L5
+  40:../lgg/gyro/mpu6050.c **** 		);
+  41:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStop(XMC_USIC2_CH0);
+ 120              	 .loc 1 41 0
+ 121 0088 0648     	 ldr r0,.L6
+ 122 008a FFF7FEFF 	 bl XMC_I2C_CH_MasterStop
+  42:../lgg/gyro/mpu6050.c **** 
+  43:../lgg/gyro/mpu6050.c **** 	*data = XMC_I2C_CH_GetReceivedData(XMC_USIC2_CH0);
+ 123              	 .loc 1 43 0
+ 124 008e 0548     	 ldr r0,.L6
+ 125 0090 FFF7FEFF 	 bl XMC_I2C_CH_GetReceivedData
+ 126 0094 0346     	 mov r3,r0
+ 127 0096 1A46     	 mov r2,r3
+ 128 0098 3B68     	 ldr r3,[r7]
+ 129 009a 1A70     	 strb r2,[r3]
+  44:../lgg/gyro/mpu6050.c **** }
+ 130              	 .loc 1 44 0
+ 131 009c 0837     	 adds r7,r7,#8
+ 132              	.LCFI3:
+ 133              	 .cfi_def_cfa_offset 8
+ 134 009e BD46     	 mov sp,r7
+ 135              	.LCFI4:
+ 136              	 .cfi_def_cfa_register 13
+ 137              	 
+ 138 00a0 80BD     	 pop {r7,pc}
+ 139              	.L7:
+ 140 00a2 00BF     	 .align 2
+ 141              	.L6:
+ 142 00a4 00400248 	 .word 1208107008
+ 143              	 .cfi_endproc
+ 144              	.LFE264:
+ 146              	 .section .text.lgg_gyro_write_register_byte,"ax",%progbits
+ 147              	 .align 2
+ 148              	 .global lgg_gyro_write_register_byte
+ 149              	 .thumb
+ 150              	 .thumb_func
+ 152              	lgg_gyro_write_register_byte:
+ 153              	.LFB265:
+  45:../lgg/gyro/mpu6050.c **** 
+  46:../lgg/gyro/mpu6050.c **** void lgg_gyro_write_register_byte(uint8_t address, uint8_t* data)
+  47:../lgg/gyro/mpu6050.c **** {
+ 154              	 .loc 1 47 0
+ 155              	 .cfi_startproc
+ 156              	 
+ 157              	 
+ 158 0000 80B5     	 push {r7,lr}
+ 159              	.LCFI5:
+ 160              	 .cfi_def_cfa_offset 8
+ 161              	 .cfi_offset 7,-8
+ 162              	 .cfi_offset 14,-4
+ 163 0002 82B0     	 sub sp,sp,#8
+ 164              	.LCFI6:
+ 165              	 .cfi_def_cfa_offset 16
+ 166 0004 00AF     	 add r7,sp,#0
+ 167              	.LCFI7:
+ 168              	 .cfi_def_cfa_register 7
+ 169 0006 0346     	 mov r3,r0
+ 170 0008 3960     	 str r1,[r7]
+ 171 000a FB71     	 strb r3,[r7,#7]
+  48:../lgg/gyro/mpu6050.c **** 	/* send address (W) */
+  49:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 172              	 .loc 1 49 0
+ 173 000c 1D4B     	 ldr r3,.L12
+ 174 000e 4FF40072 	 mov r2,#512
+ 175 0012 DA64     	 str r2,[r3,#76]
+  50:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStart(XMC_USIC2_CH0, 0xD0, XMC_I2C_CH_CMD_WRITE);
+ 176              	 .loc 1 50 0
+ 177 0014 1B48     	 ldr r0,.L12
+ 178 0016 D021     	 movs r1,#208
+ 179 0018 0022     	 movs r2,#0
+ 180 001a FFF7FEFF 	 bl XMC_I2C_CH_MasterStart
+  51:../lgg/gyro/mpu6050.c **** 	while(
+ 181              	 .loc 1 51 0
+ 182 001e 00BF     	 nop
+ 183              	.L9:
+  52:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 184              	 .loc 1 52 0 discriminator 1
+ 185 0020 184B     	 ldr r3,.L12
+ 186 0022 9B6C     	 ldr r3,[r3,#72]
+ 187 0024 03F40073 	 and r3,r3,#512
+  51:../lgg/gyro/mpu6050.c **** 	while(
+ 188              	 .loc 1 51 0 discriminator 1
+ 189 0028 002B     	 cmp r3,#0
+ 190 002a F9D0     	 beq .L9
+  53:../lgg/gyro/mpu6050.c **** 		);
+  54:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 191              	 .loc 1 54 0
+ 192 002c 154B     	 ldr r3,.L12
+ 193 002e 4FF40072 	 mov r2,#512
+ 194 0032 DA64     	 str r2,[r3,#76]
+  55:../lgg/gyro/mpu6050.c **** 	/* send REGISTER address */
+  56:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, address);
+ 195              	 .loc 1 56 0
+ 196 0034 FB79     	 ldrb r3,[r7,#7]
+ 197 0036 1348     	 ldr r0,.L12
+ 198 0038 1946     	 mov r1,r3
+ 199 003a FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+  57:../lgg/gyro/mpu6050.c **** 	while(
+ 200              	 .loc 1 57 0
+ 201 003e 00BF     	 nop
+ 202              	.L10:
+  58:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 203              	 .loc 1 58 0 discriminator 1
+ 204 0040 104B     	 ldr r3,.L12
+ 205 0042 9B6C     	 ldr r3,[r3,#72]
+ 206 0044 03F40073 	 and r3,r3,#512
+  57:../lgg/gyro/mpu6050.c **** 	while(
+ 207              	 .loc 1 57 0 discriminator 1
+ 208 0048 002B     	 cmp r3,#0
+ 209 004a F9D0     	 beq .L10
+  59:../lgg/gyro/mpu6050.c **** 		);
+  60:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 210              	 .loc 1 60 0
+ 211 004c 0D4B     	 ldr r3,.L12
+ 212 004e 4FF40072 	 mov r2,#512
+ 213 0052 DA64     	 str r2,[r3,#76]
+  61:../lgg/gyro/mpu6050.c **** 	/* send data */
+  62:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, *data);
+ 214              	 .loc 1 62 0
+ 215 0054 3B68     	 ldr r3,[r7]
+ 216 0056 1B78     	 ldrb r3,[r3]
+ 217 0058 0A48     	 ldr r0,.L12
+ 218 005a 1946     	 mov r1,r3
+ 219 005c FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+  63:../lgg/gyro/mpu6050.c **** 	while(
+ 220              	 .loc 1 63 0
+ 221 0060 00BF     	 nop
+ 222              	.L11:
+  64:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 223              	 .loc 1 64 0 discriminator 1
+ 224 0062 084B     	 ldr r3,.L12
+ 225 0064 9B6C     	 ldr r3,[r3,#72]
+ 226 0066 03F40073 	 and r3,r3,#512
+  63:../lgg/gyro/mpu6050.c **** 	while(
+ 227              	 .loc 1 63 0 discriminator 1
+ 228 006a 002B     	 cmp r3,#0
+ 229 006c F9D0     	 beq .L11
+  65:../lgg/gyro/mpu6050.c **** 		);
+  66:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 230              	 .loc 1 66 0
+ 231 006e 054B     	 ldr r3,.L12
+ 232 0070 4FF40072 	 mov r2,#512
+ 233 0074 DA64     	 str r2,[r3,#76]
+  67:../lgg/gyro/mpu6050.c **** 	/* stop */
+  68:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStop(XMC_USIC2_CH0);
+ 234              	 .loc 1 68 0
+ 235 0076 0348     	 ldr r0,.L12
+ 236 0078 FFF7FEFF 	 bl XMC_I2C_CH_MasterStop
+  69:../lgg/gyro/mpu6050.c **** }
+ 237              	 .loc 1 69 0
+ 238 007c 0837     	 adds r7,r7,#8
+ 239              	.LCFI8:
+ 240              	 .cfi_def_cfa_offset 8
+ 241 007e BD46     	 mov sp,r7
+ 242              	.LCFI9:
+ 243              	 .cfi_def_cfa_register 13
+ 244              	 
+ 245 0080 80BD     	 pop {r7,pc}
+ 246              	.L13:
+ 247 0082 00BF     	 .align 2
+ 248              	.L12:
+ 249 0084 00400248 	 .word 1208107008
+ 250              	 .cfi_endproc
+ 251              	.LFE265:
+ 253              	 .section .text.lgg_gyro_write_register_hword,"ax",%progbits
+ 254              	 .align 2
+ 255              	 .global lgg_gyro_write_register_hword
+ 256              	 .thumb
+ 257              	 .thumb_func
+ 259              	lgg_gyro_write_register_hword:
+ 260              	.LFB266:
+  70:../lgg/gyro/mpu6050.c **** 
+  71:../lgg/gyro/mpu6050.c **** void lgg_gyro_write_register_hword(uint8_t address, uint16_t* data)
+  72:../lgg/gyro/mpu6050.c **** {
+ 261              	 .loc 1 72 0
+ 262              	 .cfi_startproc
+ 263              	 
+ 264              	 
+ 265 0000 80B5     	 push {r7,lr}
+ 266              	.LCFI10:
+ 267              	 .cfi_def_cfa_offset 8
+ 268              	 .cfi_offset 7,-8
+ 269              	 .cfi_offset 14,-4
+ 270 0002 84B0     	 sub sp,sp,#16
+ 271              	.LCFI11:
+ 272              	 .cfi_def_cfa_offset 24
+ 273 0004 00AF     	 add r7,sp,#0
+ 274              	.LCFI12:
+ 275              	 .cfi_def_cfa_register 7
+ 276 0006 0346     	 mov r3,r0
+ 277 0008 3960     	 str r1,[r7]
+ 278 000a FB71     	 strb r3,[r7,#7]
+  73:../lgg/gyro/mpu6050.c **** 	uint8_t* temp = (uint8_t*) data;
+ 279              	 .loc 1 73 0
+ 280 000c 3B68     	 ldr r3,[r7]
+ 281 000e FB60     	 str r3,[r7,#12]
+  74:../lgg/gyro/mpu6050.c **** 	/* send address (W) */
+  75:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 282              	 .loc 1 75 0
+ 283 0010 264B     	 ldr r3,.L19
+ 284 0012 4FF40072 	 mov r2,#512
+ 285 0016 DA64     	 str r2,[r3,#76]
+  76:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStart(XMC_USIC2_CH0, 0xD0, XMC_I2C_CH_CMD_WRITE);
+ 286              	 .loc 1 76 0
+ 287 0018 2448     	 ldr r0,.L19
+ 288 001a D021     	 movs r1,#208
+ 289 001c 0022     	 movs r2,#0
+ 290 001e FFF7FEFF 	 bl XMC_I2C_CH_MasterStart
+  77:../lgg/gyro/mpu6050.c **** 	while(
+ 291              	 .loc 1 77 0
+ 292 0022 00BF     	 nop
+ 293              	.L15:
+  78:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 294              	 .loc 1 78 0 discriminator 1
+ 295 0024 214B     	 ldr r3,.L19
+ 296 0026 9B6C     	 ldr r3,[r3,#72]
+ 297 0028 03F40073 	 and r3,r3,#512
+  77:../lgg/gyro/mpu6050.c **** 	while(
+ 298              	 .loc 1 77 0 discriminator 1
+ 299 002c 002B     	 cmp r3,#0
+ 300 002e F9D0     	 beq .L15
+  79:../lgg/gyro/mpu6050.c **** 		);
+  80:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 301              	 .loc 1 80 0
+ 302 0030 1E4B     	 ldr r3,.L19
+ 303 0032 4FF40072 	 mov r2,#512
+ 304 0036 DA64     	 str r2,[r3,#76]
+  81:../lgg/gyro/mpu6050.c **** 	/* send REGISTER address */
+  82:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, address);
+ 305              	 .loc 1 82 0
+ 306 0038 FB79     	 ldrb r3,[r7,#7]
+ 307 003a 1C48     	 ldr r0,.L19
+ 308 003c 1946     	 mov r1,r3
+ 309 003e FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+  83:../lgg/gyro/mpu6050.c **** 	while(
+ 310              	 .loc 1 83 0
+ 311 0042 00BF     	 nop
+ 312              	.L16:
+  84:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 313              	 .loc 1 84 0 discriminator 1
+ 314 0044 194B     	 ldr r3,.L19
+ 315 0046 9B6C     	 ldr r3,[r3,#72]
+ 316 0048 03F40073 	 and r3,r3,#512
+  83:../lgg/gyro/mpu6050.c **** 	while(
+ 317              	 .loc 1 83 0 discriminator 1
+ 318 004c 002B     	 cmp r3,#0
+ 319 004e F9D0     	 beq .L16
+  85:../lgg/gyro/mpu6050.c **** 		);
+  86:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 320              	 .loc 1 86 0
+ 321 0050 164B     	 ldr r3,.L19
+ 322 0052 4FF40072 	 mov r2,#512
+ 323 0056 DA64     	 str r2,[r3,#76]
+  87:../lgg/gyro/mpu6050.c **** 	/* send dataH */
+  88:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, (uint8_t)*(temp+1));
+ 324              	 .loc 1 88 0
+ 325 0058 FB68     	 ldr r3,[r7,#12]
+ 326 005a 0133     	 adds r3,r3,#1
+ 327 005c 1B78     	 ldrb r3,[r3]
+ 328 005e 1348     	 ldr r0,.L19
+ 329 0060 1946     	 mov r1,r3
+ 330 0062 FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+  89:../lgg/gyro/mpu6050.c **** 	while(
+ 331              	 .loc 1 89 0
+ 332 0066 00BF     	 nop
+ 333              	.L17:
+  90:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 334              	 .loc 1 90 0 discriminator 1
+ 335 0068 104B     	 ldr r3,.L19
+ 336 006a 9B6C     	 ldr r3,[r3,#72]
+ 337 006c 03F40073 	 and r3,r3,#512
+  89:../lgg/gyro/mpu6050.c **** 	while(
+ 338              	 .loc 1 89 0 discriminator 1
+ 339 0070 002B     	 cmp r3,#0
+ 340 0072 F9D0     	 beq .L17
+  91:../lgg/gyro/mpu6050.c **** 		);
+  92:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 341              	 .loc 1 92 0
+ 342 0074 0D4B     	 ldr r3,.L19
+ 343 0076 4FF40072 	 mov r2,#512
+ 344 007a DA64     	 str r2,[r3,#76]
+  93:../lgg/gyro/mpu6050.c **** 	/* send dataL */
+  94:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, (uint8_t)*(temp));
+ 345              	 .loc 1 94 0
+ 346 007c FB68     	 ldr r3,[r7,#12]
+ 347 007e 1B78     	 ldrb r3,[r3]
+ 348 0080 0A48     	 ldr r0,.L19
+ 349 0082 1946     	 mov r1,r3
+ 350 0084 FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+  95:../lgg/gyro/mpu6050.c **** 	while(
+ 351              	 .loc 1 95 0
+ 352 0088 00BF     	 nop
+ 353              	.L18:
+  96:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 354              	 .loc 1 96 0 discriminator 1
+ 355 008a 084B     	 ldr r3,.L19
+ 356 008c 9B6C     	 ldr r3,[r3,#72]
+ 357 008e 03F40073 	 and r3,r3,#512
+  95:../lgg/gyro/mpu6050.c **** 	while(
+ 358              	 .loc 1 95 0 discriminator 1
+ 359 0092 002B     	 cmp r3,#0
+ 360 0094 F9D0     	 beq .L18
+  97:../lgg/gyro/mpu6050.c **** 		);
+  98:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 361              	 .loc 1 98 0
+ 362 0096 054B     	 ldr r3,.L19
+ 363 0098 4FF40072 	 mov r2,#512
+ 364 009c DA64     	 str r2,[r3,#76]
+  99:../lgg/gyro/mpu6050.c **** 	/* stop */
+ 100:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStop(XMC_USIC2_CH0);
+ 365              	 .loc 1 100 0
+ 366 009e 0348     	 ldr r0,.L19
+ 367 00a0 FFF7FEFF 	 bl XMC_I2C_CH_MasterStop
+ 101:../lgg/gyro/mpu6050.c **** }
+ 368              	 .loc 1 101 0
+ 369 00a4 1037     	 adds r7,r7,#16
+ 370              	.LCFI13:
+ 371              	 .cfi_def_cfa_offset 8
+ 372 00a6 BD46     	 mov sp,r7
+ 373              	.LCFI14:
+ 374              	 .cfi_def_cfa_register 13
+ 375              	 
+ 376 00a8 80BD     	 pop {r7,pc}
+ 377              	.L20:
+ 378 00aa 00BF     	 .align 2
+ 379              	.L19:
+ 380 00ac 00400248 	 .word 1208107008
+ 381              	 .cfi_endproc
+ 382              	.LFE266:
+ 384              	 .section .text.lgg_gyro_read_register_hword,"ax",%progbits
+ 385              	 .align 2
+ 386              	 .global lgg_gyro_read_register_hword
+ 387              	 .thumb
+ 388              	 .thumb_func
+ 390              	lgg_gyro_read_register_hword:
+ 391              	.LFB267:
+ 102:../lgg/gyro/mpu6050.c **** 
+ 103:../lgg/gyro/mpu6050.c **** void lgg_gyro_read_register_hword(uint8_t address, uint16_t* data)
+ 104:../lgg/gyro/mpu6050.c **** {
+ 392              	 .loc 1 104 0
+ 393              	 .cfi_startproc
+ 394              	 
+ 395              	 
+ 396 0000 90B5     	 push {r4,r7,lr}
+ 397              	.LCFI15:
+ 398              	 .cfi_def_cfa_offset 12
+ 399              	 .cfi_offset 4,-12
+ 400              	 .cfi_offset 7,-8
+ 401              	 .cfi_offset 14,-4
+ 402 0002 85B0     	 sub sp,sp,#20
+ 403              	.LCFI16:
+ 404              	 .cfi_def_cfa_offset 32
+ 405 0004 00AF     	 add r7,sp,#0
+ 406              	.LCFI17:
+ 407              	 .cfi_def_cfa_register 7
+ 408 0006 0346     	 mov r3,r0
+ 409 0008 3960     	 str r1,[r7]
+ 410 000a FB71     	 strb r3,[r7,#7]
+ 105:../lgg/gyro/mpu6050.c **** 	uint8_t* temp = (uint8_t*) data;
+ 411              	 .loc 1 105 0
+ 412 000c 3B68     	 ldr r3,[r7]
+ 413 000e FB60     	 str r3,[r7,#12]
+ 106:../lgg/gyro/mpu6050.c **** 	/* send address (W) */
+ 107:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 414              	 .loc 1 107 0
+ 415 0010 314B     	 ldr r3,.L27
+ 416 0012 4FF40072 	 mov r2,#512
+ 417 0016 DA64     	 str r2,[r3,#76]
+ 108:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStart(XMC_USIC2_CH0, 0xD0, XMC_I2C_CH_CMD_WRITE);
+ 418              	 .loc 1 108 0
+ 419 0018 2F48     	 ldr r0,.L27
+ 420 001a D021     	 movs r1,#208
+ 421 001c 0022     	 movs r2,#0
+ 422 001e FFF7FEFF 	 bl XMC_I2C_CH_MasterStart
+ 109:../lgg/gyro/mpu6050.c **** 	while(
+ 423              	 .loc 1 109 0
+ 424 0022 00BF     	 nop
+ 425              	.L22:
+ 110:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 426              	 .loc 1 110 0 discriminator 1
+ 427 0024 2C4B     	 ldr r3,.L27
+ 428 0026 9B6C     	 ldr r3,[r3,#72]
+ 429 0028 03F40073 	 and r3,r3,#512
+ 109:../lgg/gyro/mpu6050.c **** 	while(
+ 430              	 .loc 1 109 0 discriminator 1
+ 431 002c 002B     	 cmp r3,#0
+ 432 002e F9D0     	 beq .L22
+ 111:../lgg/gyro/mpu6050.c **** 		);
+ 112:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 433              	 .loc 1 112 0
+ 434 0030 294B     	 ldr r3,.L27
+ 435 0032 4FF40072 	 mov r2,#512
+ 436 0036 DA64     	 str r2,[r3,#76]
+ 113:../lgg/gyro/mpu6050.c **** 	/* send REGISTER address */
+ 114:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterTransmit(XMC_USIC2_CH0, address);
+ 437              	 .loc 1 114 0
+ 438 0038 FB79     	 ldrb r3,[r7,#7]
+ 439 003a 2748     	 ldr r0,.L27
+ 440 003c 1946     	 mov r1,r3
+ 441 003e FFF7FEFF 	 bl XMC_I2C_CH_MasterTransmit
+ 115:../lgg/gyro/mpu6050.c **** 	while(
+ 442              	 .loc 1 115 0
+ 443 0042 00BF     	 nop
+ 444              	.L23:
+ 116:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 445              	 .loc 1 116 0 discriminator 1
+ 446 0044 244B     	 ldr r3,.L27
+ 447 0046 9B6C     	 ldr r3,[r3,#72]
+ 448 0048 03F40073 	 and r3,r3,#512
+ 115:../lgg/gyro/mpu6050.c **** 	while(
+ 449              	 .loc 1 115 0 discriminator 1
+ 450 004c 002B     	 cmp r3,#0
+ 451 004e F9D0     	 beq .L23
+ 117:../lgg/gyro/mpu6050.c **** 		);
+ 118:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9);
+ 452              	 .loc 1 118 0
+ 453 0050 214B     	 ldr r3,.L27
+ 454 0052 4FF40072 	 mov r2,#512
+ 455 0056 DA64     	 str r2,[r3,#76]
+ 119:../lgg/gyro/mpu6050.c **** 	/* start read */
+ 120:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterRepeatedStart(XMC_USIC2_CH0, 0xD1, XMC_I2C_CH_CMD_READ);
+ 456              	 .loc 1 120 0
+ 457 0058 1F48     	 ldr r0,.L27
+ 458 005a D121     	 movs r1,#209
+ 459 005c 0122     	 movs r2,#1
+ 460 005e FFF7FEFF 	 bl XMC_I2C_CH_MasterRepeatedStart
+ 121:../lgg/gyro/mpu6050.c **** 	while(
+ 461              	 .loc 1 121 0
+ 462 0062 00BF     	 nop
+ 463              	.L24:
+ 122:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 9)) == 0
+ 464              	 .loc 1 122 0 discriminator 1
+ 465 0064 1C4B     	 ldr r3,.L27
+ 466 0066 9B6C     	 ldr r3,[r3,#72]
+ 467 0068 03F40073 	 and r3,r3,#512
+ 121:../lgg/gyro/mpu6050.c **** 	while(
+ 468              	 .loc 1 121 0 discriminator 1
+ 469 006c 002B     	 cmp r3,#0
+ 470 006e F9D0     	 beq .L24
+ 123:../lgg/gyro/mpu6050.c **** 		);
+ 124:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9 | 1 << 14 | 1 << 15);
+ 471              	 .loc 1 124 0
+ 472 0070 194B     	 ldr r3,.L27
+ 473 0072 4FF44242 	 mov r2,#49664
+ 474 0076 DA64     	 str r2,[r3,#76]
+ 125:../lgg/gyro/mpu6050.c **** 	/* receive dataH */
+ 126:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterReceiveNack(XMC_USIC2_CH0);
+ 475              	 .loc 1 126 0
+ 476 0078 1748     	 ldr r0,.L27
+ 477 007a FFF7FEFF 	 bl XMC_I2C_CH_MasterReceiveNack
+ 127:../lgg/gyro/mpu6050.c **** 	while(
+ 478              	 .loc 1 127 0
+ 479 007e 00BF     	 nop
+ 480              	.L25:
+ 128:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 14 | 1 << 15)) == 0
+ 481              	 .loc 1 128 0 discriminator 1
+ 482 0080 154B     	 ldr r3,.L27
+ 483 0082 9B6C     	 ldr r3,[r3,#72]
+ 484 0084 03F44043 	 and r3,r3,#49152
+ 127:../lgg/gyro/mpu6050.c **** 	while(
+ 485              	 .loc 1 127 0 discriminator 1
+ 486 0088 002B     	 cmp r3,#0
+ 487 008a F9D0     	 beq .L25
+ 129:../lgg/gyro/mpu6050.c **** 		);
+ 130:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9 | 1 << 14 | 1 << 15);
+ 488              	 .loc 1 130 0
+ 489 008c 124B     	 ldr r3,.L27
+ 490 008e 4FF44242 	 mov r2,#49664
+ 491 0092 DA64     	 str r2,[r3,#76]
+ 131:../lgg/gyro/mpu6050.c **** 
+ 132:../lgg/gyro/mpu6050.c **** 	*(temp+1) = XMC_I2C_CH_GetReceivedData(XMC_USIC2_CH0);
+ 492              	 .loc 1 132 0
+ 493 0094 FB68     	 ldr r3,[r7,#12]
+ 494 0096 5C1C     	 adds r4,r3,#1
+ 495 0098 0F48     	 ldr r0,.L27
+ 496 009a FFF7FEFF 	 bl XMC_I2C_CH_GetReceivedData
+ 497 009e 0346     	 mov r3,r0
+ 498 00a0 2370     	 strb r3,[r4]
+ 133:../lgg/gyro/mpu6050.c **** 	/* receive dataL */
+ 134:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterReceiveNack(XMC_USIC2_CH0);
+ 499              	 .loc 1 134 0
+ 500 00a2 0D48     	 ldr r0,.L27
+ 501 00a4 FFF7FEFF 	 bl XMC_I2C_CH_MasterReceiveNack
+ 135:../lgg/gyro/mpu6050.c **** 	while(
+ 502              	 .loc 1 135 0
+ 503 00a8 00BF     	 nop
+ 504              	.L26:
+ 136:../lgg/gyro/mpu6050.c **** 				(USIC2_CH0->PSR_IICMode & (1 << 14 | 1 << 15)) == 0
+ 505              	 .loc 1 136 0 discriminator 1
+ 506 00aa 0B4B     	 ldr r3,.L27
+ 507 00ac 9B6C     	 ldr r3,[r3,#72]
+ 508 00ae 03F44043 	 and r3,r3,#49152
+ 135:../lgg/gyro/mpu6050.c **** 	while(
+ 509              	 .loc 1 135 0 discriminator 1
+ 510 00b2 002B     	 cmp r3,#0
+ 511 00b4 F9D0     	 beq .L26
+ 137:../lgg/gyro/mpu6050.c **** 		);
+ 138:../lgg/gyro/mpu6050.c **** 	USIC2_CH0->PSCR = (1 << 9 | 1 << 14 | 1 << 15);
+ 512              	 .loc 1 138 0
+ 513 00b6 084B     	 ldr r3,.L27
+ 514 00b8 4FF44242 	 mov r2,#49664
+ 515 00bc DA64     	 str r2,[r3,#76]
+ 139:../lgg/gyro/mpu6050.c **** 
+ 140:../lgg/gyro/mpu6050.c **** 	XMC_I2C_CH_MasterStop(XMC_USIC2_CH0);
+ 516              	 .loc 1 140 0
+ 517 00be 0648     	 ldr r0,.L27
+ 518 00c0 FFF7FEFF 	 bl XMC_I2C_CH_MasterStop
+ 141:../lgg/gyro/mpu6050.c **** 
+ 142:../lgg/gyro/mpu6050.c **** 	*(temp) = XMC_I2C_CH_GetReceivedData(XMC_USIC2_CH0);
+ 519              	 .loc 1 142 0
+ 520 00c4 0448     	 ldr r0,.L27
+ 521 00c6 FFF7FEFF 	 bl XMC_I2C_CH_GetReceivedData
+ 522 00ca 0346     	 mov r3,r0
+ 523 00cc 1A46     	 mov r2,r3
+ 524 00ce FB68     	 ldr r3,[r7,#12]
+ 525 00d0 1A70     	 strb r2,[r3]
+ 143:../lgg/gyro/mpu6050.c **** }
+ 526              	 .loc 1 143 0
+ 527 00d2 1437     	 adds r7,r7,#20
+ 528              	.LCFI18:
+ 529              	 .cfi_def_cfa_offset 12
+ 530 00d4 BD46     	 mov sp,r7
+ 531              	.LCFI19:
+ 532              	 .cfi_def_cfa_register 13
+ 533              	 
+ 534 00d6 90BD     	 pop {r4,r7,pc}
+ 535              	.L28:
+ 536              	 .align 2
+ 537              	.L27:
+ 538 00d8 00400248 	 .word 1208107008
+ 539              	 .cfi_endproc
+ 540              	.LFE267:
+ 542              	 .section .text.lgg_gyro_init,"ax",%progbits
+ 543              	 .align 2
+ 544              	 .global lgg_gyro_init
+ 545              	 .thumb
+ 546              	 .thumb_func
+ 548              	lgg_gyro_init:
+ 549              	.LFB268:
+ 144:../lgg/gyro/mpu6050.c **** 
+ 145:../lgg/gyro/mpu6050.c **** void lgg_gyro_init(void)
+ 146:../lgg/gyro/mpu6050.c **** {
+ 550              	 .loc 1 146 0
+ 551              	 .cfi_startproc
+ 552              	 
+ 553              	 
+ 554 0000 80B5     	 push {r7,lr}
+ 555              	.LCFI20:
+ 556              	 .cfi_def_cfa_offset 8
+ 557              	 .cfi_offset 7,-8
+ 558              	 .cfi_offset 14,-4
+ 559 0002 82B0     	 sub sp,sp,#8
+ 560              	.LCFI21:
+ 561              	 .cfi_def_cfa_offset 16
+ 562 0004 00AF     	 add r7,sp,#0
+ 563              	.LCFI22:
+ 564              	 .cfi_def_cfa_register 7
+ 147:../lgg/gyro/mpu6050.c **** 	uint8_t temp = 0;
+ 565              	 .loc 1 147 0
+ 566 0006 0023     	 movs r3,#0
+ 567 0008 FB70     	 strb r3,[r7,#3]
+ 148:../lgg/gyro/mpu6050.c **** 	uint32_t i = 0;
+ 568              	 .loc 1 148 0
+ 569 000a 0023     	 movs r3,#0
+ 570 000c 7B60     	 str r3,[r7,#4]
+ 149:../lgg/gyro/mpu6050.c **** 
+ 150:../lgg/gyro/mpu6050.c **** 	/* iic interface init */
+ 151:../lgg/gyro/mpu6050.c **** 	lgg_iic_init();
+ 571              	 .loc 1 151 0
+ 572 000e FFF7FEFF 	 bl lgg_iic_init
+ 152:../lgg/gyro/mpu6050.c **** 
+ 153:../lgg/gyro/mpu6050.c **** 	/* reset gyro */
+ 154:../lgg/gyro/mpu6050.c **** 	temp = 0x80;	lgg_gyro_write_register_byte(0x6B, &temp);
+ 573              	 .loc 1 154 0
+ 574 0012 8023     	 movs r3,#128
+ 575 0014 FB70     	 strb r3,[r7,#3]
+ 576 0016 FB1C     	 adds r3,r7,#3
+ 577 0018 6B20     	 movs r0,#107
+ 578 001a 1946     	 mov r1,r3
+ 579 001c FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 155:../lgg/gyro/mpu6050.c **** 	for(i=0; i<0xFFFF; i++);
+ 580              	 .loc 1 155 0
+ 581 0020 0023     	 movs r3,#0
+ 582 0022 7B60     	 str r3,[r7,#4]
+ 583 0024 02E0     	 b .L30
+ 584              	.L31:
+ 585              	 .loc 1 155 0 is_stmt 0 discriminator 3
+ 586 0026 7B68     	 ldr r3,[r7,#4]
+ 587 0028 0133     	 adds r3,r3,#1
+ 588 002a 7B60     	 str r3,[r7,#4]
+ 589              	.L30:
+ 590              	 .loc 1 155 0 discriminator 1
+ 591 002c 7B68     	 ldr r3,[r7,#4]
+ 592 002e 4FF6FE72 	 movw r2,#65534
+ 593 0032 9342     	 cmp r3,r2
+ 594 0034 F7D9     	 bls .L31
+ 156:../lgg/gyro/mpu6050.c **** 	temp = 0x00;    lgg_gyro_write_register_byte(0x6B, &temp);
+ 595              	 .loc 1 156 0 is_stmt 1
+ 596 0036 0023     	 movs r3,#0
+ 597 0038 FB70     	 strb r3,[r7,#3]
+ 598 003a FB1C     	 adds r3,r7,#3
+ 599 003c 6B20     	 movs r0,#107
+ 600 003e 1946     	 mov r1,r3
+ 601 0040 FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 157:../lgg/gyro/mpu6050.c **** 
+ 158:../lgg/gyro/mpu6050.c **** 	/* read who am i */
+ 159:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x75, &temp);
+ 602              	 .loc 1 159 0
+ 603 0044 FB1C     	 adds r3,r7,#3
+ 604 0046 7520     	 movs r0,#117
+ 605 0048 1946     	 mov r1,r3
+ 606 004a FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 160:../lgg/gyro/mpu6050.c **** 	if(temp != 0x68)
+ 607              	 .loc 1 160 0
+ 608 004e FB78     	 ldrb r3,[r7,#3]
+ 609 0050 682B     	 cmp r3,#104
+ 610 0052 29D1     	 bne .L29
+ 161:../lgg/gyro/mpu6050.c **** 		return ;
+ 162:../lgg/gyro/mpu6050.c **** 
+ 163:../lgg/gyro/mpu6050.c **** 	/* parameters */
+ 164:../lgg/gyro/mpu6050.c **** 	temp=0x18; lgg_gyro_write_register_byte(0x1B, &temp);  /* Set Gyro Full Scale +-2000dps */
+ 611              	 .loc 1 164 0
+ 612 0054 1823     	 movs r3,#24
+ 613 0056 FB70     	 strb r3,[r7,#3]
+ 614 0058 FB1C     	 adds r3,r7,#3
+ 615 005a 1B20     	 movs r0,#27
+ 616 005c 1946     	 mov r1,r3
+ 617 005e FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 165:../lgg/gyro/mpu6050.c **** 	temp=0x00; lgg_gyro_write_register_byte(0x1C, &temp);  /* Set ACCEL Full Scale +-2g */
+ 618              	 .loc 1 165 0
+ 619 0062 0023     	 movs r3,#0
+ 620 0064 FB70     	 strb r3,[r7,#3]
+ 621 0066 FB1C     	 adds r3,r7,#3
+ 622 0068 1C20     	 movs r0,#28
+ 623 006a 1946     	 mov r1,r3
+ 624 006c FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 166:../lgg/gyro/mpu6050.c **** 	temp=0x00; lgg_gyro_write_register_byte(0x38, &temp);  /* Disable IMU Interrupt Output */
+ 625              	 .loc 1 166 0
+ 626 0070 0023     	 movs r3,#0
+ 627 0072 FB70     	 strb r3,[r7,#3]
+ 628 0074 FB1C     	 adds r3,r7,#3
+ 629 0076 3820     	 movs r0,#56
+ 630 0078 1946     	 mov r1,r3
+ 631 007a FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 167:../lgg/gyro/mpu6050.c **** 	temp=0x00; lgg_gyro_write_register_byte(0x37, &temp);  /* Disable IMU Aux I2C */
+ 632              	 .loc 1 167 0
+ 633 007e 0023     	 movs r3,#0
+ 634 0080 FB70     	 strb r3,[r7,#3]
+ 635 0082 FB1C     	 adds r3,r7,#3
+ 636 0084 3720     	 movs r0,#55
+ 637 0086 1946     	 mov r1,r3
+ 638 0088 FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 168:../lgg/gyro/mpu6050.c **** 	temp=0x01; lgg_gyro_write_register_byte(0x19, &temp);  /* Set Sample rate 500Hz */
+ 639              	 .loc 1 168 0
+ 640 008c 0123     	 movs r3,#1
+ 641 008e FB70     	 strb r3,[r7,#3]
+ 642 0090 FB1C     	 adds r3,r7,#3
+ 643 0092 1920     	 movs r0,#25
+ 644 0094 1946     	 mov r1,r3
+ 645 0096 FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 169:../lgg/gyro/mpu6050.c **** 	temp=0x02; lgg_gyro_write_register_byte(0x1A, &temp);  /* Set Filter */
+ 646              	 .loc 1 169 0
+ 647 009a 0223     	 movs r3,#2
+ 648 009c FB70     	 strb r3,[r7,#3]
+ 649 009e FB1C     	 adds r3,r7,#3
+ 650 00a0 1A20     	 movs r0,#26
+ 651 00a2 1946     	 mov r1,r3
+ 652 00a4 FFF7FEFF 	 bl lgg_gyro_write_register_byte
+ 653              	.L29:
+ 170:../lgg/gyro/mpu6050.c **** }
+ 654              	 .loc 1 170 0
+ 655 00a8 0837     	 adds r7,r7,#8
+ 656              	.LCFI23:
+ 657              	 .cfi_def_cfa_offset 8
+ 658 00aa BD46     	 mov sp,r7
+ 659              	.LCFI24:
+ 660              	 .cfi_def_cfa_register 13
+ 661              	 
+ 662 00ac 80BD     	 pop {r7,pc}
+ 663              	 .cfi_endproc
+ 664              	.LFE268:
+ 666 00ae 00BF     	 .section .text.lgg_gyro_get_rawdata,"ax",%progbits
+ 667              	 .align 2
+ 668              	 .global lgg_gyro_get_rawdata
+ 669              	 .thumb
+ 670              	 .thumb_func
+ 672              	lgg_gyro_get_rawdata:
+ 673              	.LFB269:
+ 171:../lgg/gyro/mpu6050.c **** 
+ 172:../lgg/gyro/mpu6050.c **** void lgg_gyro_get_rawdata(uint16_t* gx, uint16_t* gy, uint16_t* gz,
+ 173:../lgg/gyro/mpu6050.c **** 					uint16_t* ax, uint16_t* ay, uint16_t* az, uint16_t* tem)
+ 174:../lgg/gyro/mpu6050.c **** {
+ 674              	 .loc 1 174 0
+ 675              	 .cfi_startproc
+ 676              	 
+ 677              	 
+ 678 0000 80B5     	 push {r7,lr}
+ 679              	.LCFI25:
+ 680              	 .cfi_def_cfa_offset 8
+ 681              	 .cfi_offset 7,-8
+ 682              	 .cfi_offset 14,-4
+ 683 0002 86B0     	 sub sp,sp,#24
+ 684              	.LCFI26:
+ 685              	 .cfi_def_cfa_offset 32
+ 686 0004 00AF     	 add r7,sp,#0
+ 687              	.LCFI27:
+ 688              	 .cfi_def_cfa_register 7
+ 689 0006 F860     	 str r0,[r7,#12]
+ 690 0008 B960     	 str r1,[r7,#8]
+ 691 000a 7A60     	 str r2,[r7,#4]
+ 692 000c 3B60     	 str r3,[r7]
+ 175:../lgg/gyro/mpu6050.c **** 	uint8_t byte_H = 0, byte_L = 0;
+ 693              	 .loc 1 175 0
+ 694 000e 0023     	 movs r3,#0
+ 695 0010 FB75     	 strb r3,[r7,#23]
+ 696 0012 0023     	 movs r3,#0
+ 697 0014 BB75     	 strb r3,[r7,#22]
+ 176:../lgg/gyro/mpu6050.c **** 
+ 177:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x3B, &byte_H);
+ 698              	 .loc 1 177 0
+ 699 0016 07F11703 	 add r3,r7,#23
+ 700 001a 3B20     	 movs r0,#59
+ 701 001c 1946     	 mov r1,r3
+ 702 001e FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 178:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x3C, &byte_L);
+ 703              	 .loc 1 178 0
+ 704 0022 07F11603 	 add r3,r7,#22
+ 705 0026 3C20     	 movs r0,#60
+ 706 0028 1946     	 mov r1,r3
+ 707 002a FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 179:../lgg/gyro/mpu6050.c **** 	(*ax) = (uint16_t) (byte_H << 8) + (byte_L);
+ 708              	 .loc 1 179 0
+ 709 002e FB7D     	 ldrb r3,[r7,#23]
+ 710 0030 9BB2     	 uxth r3,r3
+ 711 0032 1B02     	 lsls r3,r3,#8
+ 712 0034 9AB2     	 uxth r2,r3
+ 713 0036 BB7D     	 ldrb r3,[r7,#22]
+ 714 0038 9BB2     	 uxth r3,r3
+ 715 003a 1344     	 add r3,r3,r2
+ 716 003c 9AB2     	 uxth r2,r3
+ 717 003e 3B68     	 ldr r3,[r7]
+ 718 0040 1A80     	 strh r2,[r3]
+ 180:../lgg/gyro/mpu6050.c **** 
+ 181:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x3D, &byte_H);
+ 719              	 .loc 1 181 0
+ 720 0042 07F11703 	 add r3,r7,#23
+ 721 0046 3D20     	 movs r0,#61
+ 722 0048 1946     	 mov r1,r3
+ 723 004a FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 182:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x3E, &byte_L);
+ 724              	 .loc 1 182 0
+ 725 004e 07F11603 	 add r3,r7,#22
+ 726 0052 3E20     	 movs r0,#62
+ 727 0054 1946     	 mov r1,r3
+ 728 0056 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 183:../lgg/gyro/mpu6050.c **** 	(*ay) = (uint16_t) (byte_H << 8) + (byte_L);
+ 729              	 .loc 1 183 0
+ 730 005a FB7D     	 ldrb r3,[r7,#23]
+ 731 005c 9BB2     	 uxth r3,r3
+ 732 005e 1B02     	 lsls r3,r3,#8
+ 733 0060 9AB2     	 uxth r2,r3
+ 734 0062 BB7D     	 ldrb r3,[r7,#22]
+ 735 0064 9BB2     	 uxth r3,r3
+ 736 0066 1344     	 add r3,r3,r2
+ 737 0068 9AB2     	 uxth r2,r3
+ 738 006a 3B6A     	 ldr r3,[r7,#32]
+ 739 006c 1A80     	 strh r2,[r3]
+ 184:../lgg/gyro/mpu6050.c **** 
+ 185:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x3F, &byte_H);
+ 740              	 .loc 1 185 0
+ 741 006e 07F11703 	 add r3,r7,#23
+ 742 0072 3F20     	 movs r0,#63
+ 743 0074 1946     	 mov r1,r3
+ 744 0076 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 186:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x40, &byte_L);
+ 745              	 .loc 1 186 0
+ 746 007a 07F11603 	 add r3,r7,#22
+ 747 007e 4020     	 movs r0,#64
+ 748 0080 1946     	 mov r1,r3
+ 749 0082 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 187:../lgg/gyro/mpu6050.c **** 	(*az) = (uint16_t) (byte_H << 8) + (byte_L);
+ 750              	 .loc 1 187 0
+ 751 0086 FB7D     	 ldrb r3,[r7,#23]
+ 752 0088 9BB2     	 uxth r3,r3
+ 753 008a 1B02     	 lsls r3,r3,#8
+ 754 008c 9AB2     	 uxth r2,r3
+ 755 008e BB7D     	 ldrb r3,[r7,#22]
+ 756 0090 9BB2     	 uxth r3,r3
+ 757 0092 1344     	 add r3,r3,r2
+ 758 0094 9AB2     	 uxth r2,r3
+ 759 0096 7B6A     	 ldr r3,[r7,#36]
+ 760 0098 1A80     	 strh r2,[r3]
+ 188:../lgg/gyro/mpu6050.c **** 
+ 189:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x43, &byte_H);
+ 761              	 .loc 1 189 0
+ 762 009a 07F11703 	 add r3,r7,#23
+ 763 009e 4320     	 movs r0,#67
+ 764 00a0 1946     	 mov r1,r3
+ 765 00a2 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 190:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x44, &byte_L);
+ 766              	 .loc 1 190 0
+ 767 00a6 07F11603 	 add r3,r7,#22
+ 768 00aa 4420     	 movs r0,#68
+ 769 00ac 1946     	 mov r1,r3
+ 770 00ae FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 191:../lgg/gyro/mpu6050.c **** 	(*gx) = (uint16_t) (byte_H << 8) + (byte_L);
+ 771              	 .loc 1 191 0
+ 772 00b2 FB7D     	 ldrb r3,[r7,#23]
+ 773 00b4 9BB2     	 uxth r3,r3
+ 774 00b6 1B02     	 lsls r3,r3,#8
+ 775 00b8 9AB2     	 uxth r2,r3
+ 776 00ba BB7D     	 ldrb r3,[r7,#22]
+ 777 00bc 9BB2     	 uxth r3,r3
+ 778 00be 1344     	 add r3,r3,r2
+ 779 00c0 9AB2     	 uxth r2,r3
+ 780 00c2 FB68     	 ldr r3,[r7,#12]
+ 781 00c4 1A80     	 strh r2,[r3]
+ 192:../lgg/gyro/mpu6050.c **** 
+ 193:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x45, &byte_H);
+ 782              	 .loc 1 193 0
+ 783 00c6 07F11703 	 add r3,r7,#23
+ 784 00ca 4520     	 movs r0,#69
+ 785 00cc 1946     	 mov r1,r3
+ 786 00ce FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 194:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x46, &byte_L);
+ 787              	 .loc 1 194 0
+ 788 00d2 07F11603 	 add r3,r7,#22
+ 789 00d6 4620     	 movs r0,#70
+ 790 00d8 1946     	 mov r1,r3
+ 791 00da FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 195:../lgg/gyro/mpu6050.c **** 	(*gy) = (uint16_t) (byte_H << 8) + (byte_L);
+ 792              	 .loc 1 195 0
+ 793 00de FB7D     	 ldrb r3,[r7,#23]
+ 794 00e0 9BB2     	 uxth r3,r3
+ 795 00e2 1B02     	 lsls r3,r3,#8
+ 796 00e4 9AB2     	 uxth r2,r3
+ 797 00e6 BB7D     	 ldrb r3,[r7,#22]
+ 798 00e8 9BB2     	 uxth r3,r3
+ 799 00ea 1344     	 add r3,r3,r2
+ 800 00ec 9AB2     	 uxth r2,r3
+ 801 00ee BB68     	 ldr r3,[r7,#8]
+ 802 00f0 1A80     	 strh r2,[r3]
+ 196:../lgg/gyro/mpu6050.c **** 
+ 197:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x47, &byte_H);
+ 803              	 .loc 1 197 0
+ 804 00f2 07F11703 	 add r3,r7,#23
+ 805 00f6 4720     	 movs r0,#71
+ 806 00f8 1946     	 mov r1,r3
+ 807 00fa FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 198:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x48, &byte_L);
+ 808              	 .loc 1 198 0
+ 809 00fe 07F11603 	 add r3,r7,#22
+ 810 0102 4820     	 movs r0,#72
+ 811 0104 1946     	 mov r1,r3
+ 812 0106 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 199:../lgg/gyro/mpu6050.c **** 	(*gz) = (uint16_t) (byte_H << 8) + (byte_L);
+ 813              	 .loc 1 199 0
+ 814 010a FB7D     	 ldrb r3,[r7,#23]
+ 815 010c 9BB2     	 uxth r3,r3
+ 816 010e 1B02     	 lsls r3,r3,#8
+ 817 0110 9AB2     	 uxth r2,r3
+ 818 0112 BB7D     	 ldrb r3,[r7,#22]
+ 819 0114 9BB2     	 uxth r3,r3
+ 820 0116 1344     	 add r3,r3,r2
+ 821 0118 9AB2     	 uxth r2,r3
+ 822 011a 7B68     	 ldr r3,[r7,#4]
+ 823 011c 1A80     	 strh r2,[r3]
+ 200:../lgg/gyro/mpu6050.c **** 
+ 201:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x41, &byte_H);
+ 824              	 .loc 1 201 0
+ 825 011e 07F11703 	 add r3,r7,#23
+ 826 0122 4120     	 movs r0,#65
+ 827 0124 1946     	 mov r1,r3
+ 828 0126 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 202:../lgg/gyro/mpu6050.c **** 	lgg_gyro_read_register_byte(0x42, &byte_L);
+ 829              	 .loc 1 202 0
+ 830 012a 07F11603 	 add r3,r7,#22
+ 831 012e 4220     	 movs r0,#66
+ 832 0130 1946     	 mov r1,r3
+ 833 0132 FFF7FEFF 	 bl lgg_gyro_read_register_byte
+ 203:../lgg/gyro/mpu6050.c **** 	(*tem) = (uint16_t) (byte_H << 8) + (byte_L);
+ 834              	 .loc 1 203 0
+ 835 0136 FB7D     	 ldrb r3,[r7,#23]
+ 836 0138 9BB2     	 uxth r3,r3
+ 837 013a 1B02     	 lsls r3,r3,#8
+ 838 013c 9AB2     	 uxth r2,r3
+ 839 013e BB7D     	 ldrb r3,[r7,#22]
+ 840 0140 9BB2     	 uxth r3,r3
+ 841 0142 1344     	 add r3,r3,r2
+ 842 0144 9AB2     	 uxth r2,r3
+ 843 0146 BB6A     	 ldr r3,[r7,#40]
+ 844 0148 1A80     	 strh r2,[r3]
+ 204:../lgg/gyro/mpu6050.c **** 
+ 205:../lgg/gyro/mpu6050.c **** }
+ 845              	 .loc 1 205 0
+ 846 014a 1837     	 adds r7,r7,#24
+ 847              	.LCFI28:
+ 848              	 .cfi_def_cfa_offset 8
+ 849 014c BD46     	 mov sp,r7
+ 850              	.LCFI29:
+ 851              	 .cfi_def_cfa_register 13
+ 852              	 
+ 853 014e 80BD     	 pop {r7,pc}
+ 854              	 .cfi_endproc
+ 855              	.LFE269:
+ 857              	 .global __aeabi_f2d
+ 858              	 .global __aeabi_dmul
+ 859              	 .global __aeabi_d2f
+ 860              	 .global __aeabi_dadd
+ 861              	 .section .text.lgg_gyro_get_rawdata_float,"ax",%progbits
+ 862              	 .align 2
+ 863              	 .global lgg_gyro_get_rawdata_float
+ 864              	 .thumb
+ 865              	 .thumb_func
+ 867              	lgg_gyro_get_rawdata_float:
+ 868              	.LFB270:
+ 206:../lgg/gyro/mpu6050.c **** 
+ 207:../lgg/gyro/mpu6050.c **** void lgg_gyro_get_rawdata_float(float32_t* ax, float32_t* ay, float32_t* az,
+ 208:../lgg/gyro/mpu6050.c **** 								float32_t* gx, float32_t* gy, float32_t* gz, float32_t* tem)
+ 209:../lgg/gyro/mpu6050.c **** {
+ 869              	 .loc 1 209 0
+ 870              	 .cfi_startproc
+ 871              	 
+ 872              	 
+ 873 0000 90B5     	 push {r4,r7,lr}
+ 874              	.LCFI30:
+ 875              	 .cfi_def_cfa_offset 12
+ 876              	 .cfi_offset 4,-12
+ 877              	 .cfi_offset 7,-8
+ 878              	 .cfi_offset 14,-4
+ 879 0002 8DB0     	 sub sp,sp,#52
+ 880              	.LCFI31:
+ 881              	 .cfi_def_cfa_offset 64
+ 882 0004 04AF     	 add r7,sp,#16
+ 883              	.LCFI32:
+ 884              	 .cfi_def_cfa 7,48
+ 885 0006 F860     	 str r0,[r7,#12]
+ 886 0008 B960     	 str r1,[r7,#8]
+ 887 000a 7A60     	 str r2,[r7,#4]
+ 888 000c 3B60     	 str r3,[r7]
+ 210:../lgg/gyro/mpu6050.c **** 	int16_t   igx, igy, igz, iax, iay, iaz, iatem;
+ 211:../lgg/gyro/mpu6050.c **** //	float32_t fgx, fgy, fgz, fax, fay, faz, fatem;
+ 212:../lgg/gyro/mpu6050.c **** 
+ 213:../lgg/gyro/mpu6050.c **** 	/* get raw data */
+ 214:../lgg/gyro/mpu6050.c **** 	lgg_gyro_get_rawdata((uint16_t*)&igx, (uint16_t*)&igy, (uint16_t*)&igz,
+ 889              	 .loc 1 214 0
+ 890 000e 07F11E00 	 add r0,r7,#30
+ 891 0012 07F11C01 	 add r1,r7,#28
+ 892 0016 07F11A02 	 add r2,r7,#26
+ 893 001a 07F11804 	 add r4,r7,#24
+ 894 001e 07F11603 	 add r3,r7,#22
+ 895 0022 0093     	 str r3,[sp]
+ 896 0024 07F11403 	 add r3,r7,#20
+ 897 0028 0193     	 str r3,[sp,#4]
+ 898 002a 07F11203 	 add r3,r7,#18
+ 899 002e 0293     	 str r3,[sp,#8]
+ 900 0030 2346     	 mov r3,r4
+ 901 0032 FFF7FEFF 	 bl lgg_gyro_get_rawdata
+ 215:../lgg/gyro/mpu6050.c **** 						(uint16_t*)&iax, (uint16_t*)&iay, (uint16_t*)&iaz, (uint16_t*)&iatem);
+ 216:../lgg/gyro/mpu6050.c **** 	/* int -> float */
+ 217:../lgg/gyro/mpu6050.c **** 	*ax = (float32_t) iax / 16384;
+ 902              	 .loc 1 217 0
+ 903 0036 3B8B     	 ldrh r3,[r7,#24]
+ 904 0038 1BB2     	 sxth r3,r3
+ 905 003a 07EE903A 	 fmsr s15,r3
+ 906 003e F8EEE77A 	 fsitos s15,s15
+ 907 0042 9FED517A 	 flds s14,.L36+16
+ 908 0046 C7EE877A 	 fdivs s15,s15,s14
+ 909 004a FB68     	 ldr r3,[r7,#12]
+ 910 004c C3ED007A 	 fsts s15,[r3]
+ 218:../lgg/gyro/mpu6050.c **** 	*ay = (float32_t) iay / 16384;
+ 911              	 .loc 1 218 0
+ 912 0050 FB8A     	 ldrh r3,[r7,#22]
+ 913 0052 1BB2     	 sxth r3,r3
+ 914 0054 07EE903A 	 fmsr s15,r3
+ 915 0058 F8EEE77A 	 fsitos s15,s15
+ 916 005c 9FED4A7A 	 flds s14,.L36+16
+ 917 0060 C7EE877A 	 fdivs s15,s15,s14
+ 918 0064 BB68     	 ldr r3,[r7,#8]
+ 919 0066 C3ED007A 	 fsts s15,[r3]
+ 219:../lgg/gyro/mpu6050.c **** 	*az = (float32_t) iaz / 16384;
+ 920              	 .loc 1 219 0
+ 921 006a BB8A     	 ldrh r3,[r7,#20]
+ 922 006c 1BB2     	 sxth r3,r3
+ 923 006e 07EE903A 	 fmsr s15,r3
+ 924 0072 F8EEE77A 	 fsitos s15,s15
+ 925 0076 9FED447A 	 flds s14,.L36+16
+ 926 007a C7EE877A 	 fdivs s15,s15,s14
+ 927 007e 7B68     	 ldr r3,[r7,#4]
+ 928 0080 C3ED007A 	 fsts s15,[r3]
+ 220:../lgg/gyro/mpu6050.c **** 	*gx = (float32_t) igx * 0.001064;
+ 929              	 .loc 1 220 0
+ 930 0084 FB8B     	 ldrh r3,[r7,#30]
+ 931 0086 1BB2     	 sxth r3,r3
+ 932 0088 07EE903A 	 fmsr s15,r3
+ 933 008c F8EEE77A 	 fsitos s15,s15
+ 934 0090 17EE900A 	 fmrs r0,s15
+ 935 0094 FFF7FEFF 	 bl __aeabi_f2d
+ 936 0098 0246     	 mov r2,r0
+ 937 009a 0B46     	 mov r3,r1
+ 938 009c 1046     	 mov r0,r2
+ 939 009e 1946     	 mov r1,r3
+ 940 00a0 35A3     	 adr r3,.L36
+ 941 00a2 D3E90023 	 ldrd r2,[r3]
+ 942 00a6 FFF7FEFF 	 bl __aeabi_dmul
+ 943 00aa 0246     	 mov r2,r0
+ 944 00ac 0B46     	 mov r3,r1
+ 945 00ae 1046     	 mov r0,r2
+ 946 00b0 1946     	 mov r1,r3
+ 947 00b2 FFF7FEFF 	 bl __aeabi_d2f
+ 948 00b6 0246     	 mov r2,r0
+ 949 00b8 3B68     	 ldr r3,[r7]
+ 950 00ba 1A60     	 str r2,[r3]
+ 221:../lgg/gyro/mpu6050.c **** 	*gy = (float32_t) igy * 0.001064;
+ 951              	 .loc 1 221 0
+ 952 00bc BB8B     	 ldrh r3,[r7,#28]
+ 953 00be 1BB2     	 sxth r3,r3
+ 954 00c0 07EE903A 	 fmsr s15,r3
+ 955 00c4 F8EEE77A 	 fsitos s15,s15
+ 956 00c8 17EE900A 	 fmrs r0,s15
+ 957 00cc FFF7FEFF 	 bl __aeabi_f2d
+ 958 00d0 0246     	 mov r2,r0
+ 959 00d2 0B46     	 mov r3,r1
+ 960 00d4 1046     	 mov r0,r2
+ 961 00d6 1946     	 mov r1,r3
+ 962 00d8 27A3     	 adr r3,.L36
+ 963 00da D3E90023 	 ldrd r2,[r3]
+ 964 00de FFF7FEFF 	 bl __aeabi_dmul
+ 965 00e2 0246     	 mov r2,r0
+ 966 00e4 0B46     	 mov r3,r1
+ 967 00e6 1046     	 mov r0,r2
+ 968 00e8 1946     	 mov r1,r3
+ 969 00ea FFF7FEFF 	 bl __aeabi_d2f
+ 970 00ee 0246     	 mov r2,r0
+ 971 00f0 3B6B     	 ldr r3,[r7,#48]
+ 972 00f2 1A60     	 str r2,[r3]
+ 222:../lgg/gyro/mpu6050.c **** 	*gz = (float32_t) igz * 0.001064;
+ 973              	 .loc 1 222 0
+ 974 00f4 7B8B     	 ldrh r3,[r7,#26]
+ 975 00f6 1BB2     	 sxth r3,r3
+ 976 00f8 07EE903A 	 fmsr s15,r3
+ 977 00fc F8EEE77A 	 fsitos s15,s15
+ 978 0100 17EE900A 	 fmrs r0,s15
+ 979 0104 FFF7FEFF 	 bl __aeabi_f2d
+ 980 0108 0246     	 mov r2,r0
+ 981 010a 0B46     	 mov r3,r1
+ 982 010c 1046     	 mov r0,r2
+ 983 010e 1946     	 mov r1,r3
+ 984 0110 19A3     	 adr r3,.L36
+ 985 0112 D3E90023 	 ldrd r2,[r3]
+ 986 0116 FFF7FEFF 	 bl __aeabi_dmul
+ 987 011a 0246     	 mov r2,r0
+ 988 011c 0B46     	 mov r3,r1
+ 989 011e 1046     	 mov r0,r2
+ 990 0120 1946     	 mov r1,r3
+ 991 0122 FFF7FEFF 	 bl __aeabi_d2f
+ 992 0126 0246     	 mov r2,r0
+ 993 0128 7B6B     	 ldr r3,[r7,#52]
+ 994 012a 1A60     	 str r2,[r3]
+ 223:../lgg/gyro/mpu6050.c **** 	*tem = (float32_t) iatem / 340 + 36.53;
+ 995              	 .loc 1 223 0
+ 996 012c 7B8A     	 ldrh r3,[r7,#18]
+ 997 012e 1BB2     	 sxth r3,r3
+ 998 0130 07EE903A 	 fmsr s15,r3
+ 999 0134 F8EEE77A 	 fsitos s15,s15
+ 1000 0138 9FED147A 	 flds s14,.L36+20
+ 1001 013c C7EE877A 	 fdivs s15,s15,s14
+ 1002 0140 17EE900A 	 fmrs r0,s15
+ 1003 0144 FFF7FEFF 	 bl __aeabi_f2d
+ 1004 0148 0246     	 mov r2,r0
+ 1005 014a 0B46     	 mov r3,r1
+ 1006 014c 1046     	 mov r0,r2
+ 1007 014e 1946     	 mov r1,r3
+ 1008 0150 0BA3     	 adr r3,.L36+8
+ 1009 0152 D3E90023 	 ldrd r2,[r3]
+ 1010 0156 FFF7FEFF 	 bl __aeabi_dadd
+ 1011 015a 0246     	 mov r2,r0
+ 1012 015c 0B46     	 mov r3,r1
+ 1013 015e 1046     	 mov r0,r2
+ 1014 0160 1946     	 mov r1,r3
+ 1015 0162 FFF7FEFF 	 bl __aeabi_d2f
+ 1016 0166 0246     	 mov r2,r0
+ 1017 0168 BB6B     	 ldr r3,[r7,#56]
+ 1018 016a 1A60     	 str r2,[r3]
+ 224:../lgg/gyro/mpu6050.c **** }
+ 1019              	 .loc 1 224 0
+ 1020 016c 2437     	 adds r7,r7,#36
+ 1021              	.LCFI33:
+ 1022              	 .cfi_def_cfa_offset 12
+ 1023 016e BD46     	 mov sp,r7
+ 1024              	.LCFI34:
+ 1025              	 .cfi_def_cfa_register 13
+ 1026              	 
+ 1027 0170 90BD     	 pop {r4,r7,pc}
+ 1028              	.L37:
+ 1029 0172 00BFAFF3 	 .align 3
+ 1029      0080
+ 1030              	.L36:
+ 1031 0178 D508FD4C 	 .word 1291651285
+ 1032 017c BD6E513F 	 .word 1062301373
+ 1033 0180 A4703D0A 	 .word 171798692
+ 1034 0184 D7434240 	 .word 1078084567
+ 1035 0188 00008046 	 .word 1182793728
+ 1036 018c 0000AA43 	 .word 1135214592
+ 1037              	 .cfi_endproc
+ 1038              	.LFE270:
+ 1040              	 .text
+ 1041              	.Letext0:
+ 1042              	 .file 2 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1043              	 .file 3 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1044              	 .file 4 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/arm_math.h"
+ 1045              	 .file 5 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Infineon/XMC4500_series/Include/XMC4500.h"
+ 1046              	 .file 6 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/XMCLib/inc/xmc_usic.h"
+ 1047              	 .file 7 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/cmsis_gcc.h"
+ 1048              	 .file 8 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/core_cm4.h"
+ 1049              	 .file 9 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/XMCLib/inc/xmc_i2c.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 mpu6050.c
+    {standard input}:20     .text.lgg_gyro_read_register_byte:00000000 $t
+    {standard input}:25     .text.lgg_gyro_read_register_byte:00000000 lgg_gyro_read_register_byte
+    {standard input}:142    .text.lgg_gyro_read_register_byte:000000a4 $d
+    {standard input}:147    .text.lgg_gyro_write_register_byte:00000000 $t
+    {standard input}:152    .text.lgg_gyro_write_register_byte:00000000 lgg_gyro_write_register_byte
+    {standard input}:249    .text.lgg_gyro_write_register_byte:00000084 $d
+    {standard input}:254    .text.lgg_gyro_write_register_hword:00000000 $t
+    {standard input}:259    .text.lgg_gyro_write_register_hword:00000000 lgg_gyro_write_register_hword
+    {standard input}:380    .text.lgg_gyro_write_register_hword:000000ac $d
+    {standard input}:385    .text.lgg_gyro_read_register_hword:00000000 $t
+    {standard input}:390    .text.lgg_gyro_read_register_hword:00000000 lgg_gyro_read_register_hword
+    {standard input}:538    .text.lgg_gyro_read_register_hword:000000d8 $d
+    {standard input}:543    .text.lgg_gyro_init:00000000 $t
+    {standard input}:548    .text.lgg_gyro_init:00000000 lgg_gyro_init
+    {standard input}:667    .text.lgg_gyro_get_rawdata:00000000 $t
+    {standard input}:672    .text.lgg_gyro_get_rawdata:00000000 lgg_gyro_get_rawdata
+    {standard input}:862    .text.lgg_gyro_get_rawdata_float:00000000 $t
+    {standard input}:867    .text.lgg_gyro_get_rawdata_float:00000000 lgg_gyro_get_rawdata_float
+    {standard input}:1031   .text.lgg_gyro_get_rawdata_float:00000178 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+XMC_I2C_CH_MasterStart
+XMC_I2C_CH_MasterTransmit
+XMC_I2C_CH_MasterRepeatedStart
+XMC_I2C_CH_MasterReceiveNack
+XMC_I2C_CH_MasterStop
+XMC_I2C_CH_GetReceivedData
+lgg_iic_init
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2f
+__aeabi_dadd

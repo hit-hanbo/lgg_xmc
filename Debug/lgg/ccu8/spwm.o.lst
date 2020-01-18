@@ -1,0 +1,399 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "spwm.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global spwm_cnt
+  20              	 .section .bss.spwm_cnt,"aw",%nobits
+  21              	 .align 2
+  24              	spwm_cnt:
+  25 0000 00000000 	 .space 4
+  26              	 .global spwm_max_cnt
+  27              	 .section .rodata.spwm_max_cnt,"a",%progbits
+  28              	 .align 2
+  31              	spwm_max_cnt:
+  32 0000 C8000000 	 .word 200
+  33              	 .global spwm_ma
+  34              	 .section .bss.spwm_ma,"aw",%nobits
+  35              	 .align 2
+  38              	spwm_ma:
+  39 0000 00000000 	 .space 4
+  40              	 .global spwm_wr
+  41              	 .section .bss.spwm_wr,"aw",%nobits
+  42              	 .align 2
+  45              	spwm_wr:
+  46 0000 00000000 	 .space 4
+  47              	 .global spwm_ph
+  48              	 .section .bss.spwm_ph,"aw",%nobits
+  49              	 .align 2
+  52              	spwm_ph:
+  53 0000 00000000 	 .space 4
+  54              	 .global ccu8_pr
+  55              	 .section .bss.ccu8_pr,"aw",%nobits
+  56              	 .align 2
+  59              	ccu8_pr:
+  60 0000 00000000 	 .space 4
+  61              	 .global __aeabi_f2d
+  62              	 .global __aeabi_dadd
+  63              	 .global __aeabi_dmul
+  64              	 .global __aeabi_d2f
+  65              	 .global __aeabi_d2uiz
+  66              	 .global __aeabi_dsub
+  67              	 .section .text.lgg_spwm_update,"ax",%progbits
+  68              	 .align 2
+  69              	 .global lgg_spwm_update
+  70              	 .thumb
+  71              	 .thumb_func
+  73              	lgg_spwm_update:
+  74              	.LFB145:
+  75              	 .file 1 "../lgg/ccu8/spwm.c"
+   1:../lgg/ccu8/spwm.c **** #include "spwm.h"
+   2:../lgg/ccu8/spwm.c **** 
+   3:../lgg/ccu8/spwm.c **** /*
+   4:../lgg/ccu8/spwm.c ****  * 		200 points
+   5:../lgg/ccu8/spwm.c ****  * */
+   6:../lgg/ccu8/spwm.c **** uint32_t   spwm_cnt = 0;
+   7:../lgg/ccu8/spwm.c **** const uint32_t   spwm_max_cnt = 200;
+   8:../lgg/ccu8/spwm.c **** 
+   9:../lgg/ccu8/spwm.c **** /*
+  10:../lgg/ccu8/spwm.c ****  * 		spwm parameters
+  11:../lgg/ccu8/spwm.c ****  * */
+  12:../lgg/ccu8/spwm.c **** float32_t  spwm_ma = 0.00f;
+  13:../lgg/ccu8/spwm.c **** float32_t  spwm_wr = 0.00f;
+  14:../lgg/ccu8/spwm.c **** float32_t  spwm_ph = 0.00f;
+  15:../lgg/ccu8/spwm.c **** uint32_t   ccu8_pr = 0;
+  16:../lgg/ccu8/spwm.c **** 
+  17:../lgg/ccu8/spwm.c **** /*
+  18:../lgg/ccu8/spwm.c ****  *		must configure CCU8 with proper parameters first
+  19:../lgg/ccu8/spwm.c ****  * */
+  20:../lgg/ccu8/spwm.c **** void lgg_spwm_update(lgg_spwm_t* p_spwm)
+  21:../lgg/ccu8/spwm.c **** {
+  76              	 .loc 1 21 0
+  77              	 .cfi_startproc
+  78              	 
+  79              	 
+  80 0000 B0B5     	 push {r4,r5,r7,lr}
+  81              	.LCFI0:
+  82              	 .cfi_def_cfa_offset 16
+  83              	 .cfi_offset 4,-16
+  84              	 .cfi_offset 5,-12
+  85              	 .cfi_offset 7,-8
+  86              	 .cfi_offset 14,-4
+  87 0002 2DED028B 	 fstmfdd sp!,{d8}
+  88              	.LCFI1:
+  89              	 .cfi_def_cfa_offset 24
+  90              	 .cfi_offset 80,-24
+  91              	 .cfi_offset 81,-20
+  92 0006 82B0     	 sub sp,sp,#8
+  93              	.LCFI2:
+  94              	 .cfi_def_cfa_offset 32
+  95 0008 00AF     	 add r7,sp,#0
+  96              	.LCFI3:
+  97              	 .cfi_def_cfa_register 7
+  98 000a 7860     	 str r0,[r7,#4]
+  22:../lgg/ccu8/spwm.c **** 	/*  available point: 0 ~ period-1  */
+  23:../lgg/ccu8/spwm.c **** 	if(p_spwm->cnt == p_spwm->period)
+  99              	 .loc 1 23 0
+ 100 000c 7B68     	 ldr r3,[r7,#4]
+ 101 000e DA68     	 ldr r2,[r3,#12]
+ 102 0010 7B68     	 ldr r3,[r7,#4]
+ 103 0012 1B69     	 ldr r3,[r3,#16]
+ 104 0014 9A42     	 cmp r2,r3
+ 105 0016 02D1     	 bne .L2
+  24:../lgg/ccu8/spwm.c **** 	{
+  25:../lgg/ccu8/spwm.c **** 		p_spwm->cnt = 0;
+ 106              	 .loc 1 25 0
+ 107 0018 7B68     	 ldr r3,[r7,#4]
+ 108 001a 0022     	 movs r2,#0
+ 109 001c DA60     	 str r2,[r3,#12]
+ 110              	.L2:
+  26:../lgg/ccu8/spwm.c **** 	}
+  27:../lgg/ccu8/spwm.c **** 	/* calculate cr value */
+  28:../lgg/ccu8/spwm.c **** 	p_spwm->cr_u = (p_spwm->ma * arm_sin_f32((float32_t)p_spwm->cnt / p_spwm->period * 2.0*PI         
+ 111              	 .loc 1 28 0
+ 112 001e 7B68     	 ldr r3,[r7,#4]
+ 113 0020 93ED058A 	 flds s16,[r3,#20]
+ 114 0024 7B68     	 ldr r3,[r7,#4]
+ 115 0026 DB68     	 ldr r3,[r3,#12]
+ 116 0028 07EE903A 	 fmsr s15,r3
+ 117 002c B8EE677A 	 fuitos s14,s15
+ 118 0030 7B68     	 ldr r3,[r7,#4]
+ 119 0032 1B69     	 ldr r3,[r3,#16]
+ 120 0034 07EE903A 	 fmsr s15,r3
+ 121 0038 F8EE677A 	 fuitos s15,s15
+ 122 003c C7EE277A 	 fdivs s15,s14,s15
+ 123 0040 17EE900A 	 fmrs r0,s15
+ 124 0044 FFF7FEFF 	 bl __aeabi_f2d
+ 125 0048 0246     	 mov r2,r0
+ 126 004a 0B46     	 mov r3,r1
+ 127 004c 1046     	 mov r0,r2
+ 128 004e 1946     	 mov r1,r3
+ 129 0050 FFF7FEFF 	 bl __aeabi_dadd
+ 130 0054 0246     	 mov r2,r0
+ 131 0056 0B46     	 mov r3,r1
+ 132 0058 1046     	 mov r0,r2
+ 133 005a 1946     	 mov r1,r3
+ 134 005c 7EA3     	 adr r3,.L3
+ 135 005e D3E90023 	 ldrd r2,[r3]
+ 136 0062 FFF7FEFF 	 bl __aeabi_dmul
+ 137 0066 0246     	 mov r2,r0
+ 138 0068 0B46     	 mov r3,r1
+ 139 006a 1046     	 mov r0,r2
+ 140 006c 1946     	 mov r1,r3
+ 141 006e FFF7FEFF 	 bl __aeabi_d2f
+ 142 0072 0346     	 mov r3,r0
+ 143 0074 1846     	 mov r0,r3
+ 144 0076 FFF7FEFF 	 bl arm_sin_f32
+ 145 007a 07EE900A 	 fmsr s15,r0
+ 146 007e 68EE277A 	 fmuls s15,s16,s15
+ 147 0082 17EE900A 	 fmrs r0,s15
+ 148 0086 FFF7FEFF 	 bl __aeabi_f2d
+ 149 008a 0246     	 mov r2,r0
+ 150 008c 0B46     	 mov r3,r1
+ 151 008e 1046     	 mov r0,r2
+ 152 0090 1946     	 mov r1,r3
+ 153 0092 4FF00002 	 mov r2,#0
+ 154 0096 744B     	 ldr r3,.L3+16
+ 155 0098 FFF7FEFF 	 bl __aeabi_dadd
+ 156 009c 0246     	 mov r2,r0
+ 157 009e 0B46     	 mov r3,r1
+ 158 00a0 1446     	 mov r4,r2
+ 159 00a2 1D46     	 mov r5,r3
+ 160 00a4 7B68     	 ldr r3,[r7,#4]
+ 161 00a6 9B69     	 ldr r3,[r3,#24]
+ 162 00a8 1846     	 mov r0,r3
+ 163 00aa FFF7FEFF 	 bl __aeabi_f2d
+ 164 00ae 0246     	 mov r2,r0
+ 165 00b0 0B46     	 mov r3,r1
+ 166 00b2 2046     	 mov r0,r4
+ 167 00b4 2946     	 mov r1,r5
+ 168 00b6 FFF7FEFF 	 bl __aeabi_dmul
+ 169 00ba 0246     	 mov r2,r0
+ 170 00bc 0B46     	 mov r3,r1
+ 171 00be 1046     	 mov r0,r2
+ 172 00c0 1946     	 mov r1,r3
+ 173 00c2 FFF7FEFF 	 bl __aeabi_d2uiz
+ 174 00c6 0246     	 mov r2,r0
+ 175 00c8 7B68     	 ldr r3,[r7,#4]
+ 176 00ca 1A60     	 str r2,[r3]
+  29:../lgg/ccu8/spwm.c **** 	p_spwm->cr_v = (p_spwm->ma * arm_sin_f32((float32_t)p_spwm->cnt / p_spwm->period * 2.0*PI - 2.0*PI
+ 177              	 .loc 1 29 0
+ 178 00cc 7B68     	 ldr r3,[r7,#4]
+ 179 00ce 93ED058A 	 flds s16,[r3,#20]
+ 180 00d2 7B68     	 ldr r3,[r7,#4]
+ 181 00d4 DB68     	 ldr r3,[r3,#12]
+ 182 00d6 07EE903A 	 fmsr s15,r3
+ 183 00da B8EE677A 	 fuitos s14,s15
+ 184 00de 7B68     	 ldr r3,[r7,#4]
+ 185 00e0 1B69     	 ldr r3,[r3,#16]
+ 186 00e2 07EE903A 	 fmsr s15,r3
+ 187 00e6 F8EE677A 	 fuitos s15,s15
+ 188 00ea C7EE277A 	 fdivs s15,s14,s15
+ 189 00ee 17EE900A 	 fmrs r0,s15
+ 190 00f2 FFF7FEFF 	 bl __aeabi_f2d
+ 191 00f6 0246     	 mov r2,r0
+ 192 00f8 0B46     	 mov r3,r1
+ 193 00fa 1046     	 mov r0,r2
+ 194 00fc 1946     	 mov r1,r3
+ 195 00fe FFF7FEFF 	 bl __aeabi_dadd
+ 196 0102 0246     	 mov r2,r0
+ 197 0104 0B46     	 mov r3,r1
+ 198 0106 1046     	 mov r0,r2
+ 199 0108 1946     	 mov r1,r3
+ 200 010a 53A3     	 adr r3,.L3
+ 201 010c D3E90023 	 ldrd r2,[r3]
+ 202 0110 FFF7FEFF 	 bl __aeabi_dmul
+ 203 0114 0246     	 mov r2,r0
+ 204 0116 0B46     	 mov r3,r1
+ 205 0118 1046     	 mov r0,r2
+ 206 011a 1946     	 mov r1,r3
+ 207 011c 50A3     	 adr r3,.L3+8
+ 208 011e D3E90023 	 ldrd r2,[r3]
+ 209 0122 FFF7FEFF 	 bl __aeabi_dsub
+ 210 0126 0246     	 mov r2,r0
+ 211 0128 0B46     	 mov r3,r1
+ 212 012a 1046     	 mov r0,r2
+ 213 012c 1946     	 mov r1,r3
+ 214 012e FFF7FEFF 	 bl __aeabi_d2f
+ 215 0132 0346     	 mov r3,r0
+ 216 0134 1846     	 mov r0,r3
+ 217 0136 FFF7FEFF 	 bl arm_sin_f32
+ 218 013a 07EE900A 	 fmsr s15,r0
+ 219 013e 68EE277A 	 fmuls s15,s16,s15
+ 220 0142 17EE900A 	 fmrs r0,s15
+ 221 0146 FFF7FEFF 	 bl __aeabi_f2d
+ 222 014a 0246     	 mov r2,r0
+ 223 014c 0B46     	 mov r3,r1
+ 224 014e 1046     	 mov r0,r2
+ 225 0150 1946     	 mov r1,r3
+ 226 0152 4FF00002 	 mov r2,#0
+ 227 0156 444B     	 ldr r3,.L3+16
+ 228 0158 FFF7FEFF 	 bl __aeabi_dadd
+ 229 015c 0246     	 mov r2,r0
+ 230 015e 0B46     	 mov r3,r1
+ 231 0160 1446     	 mov r4,r2
+ 232 0162 1D46     	 mov r5,r3
+ 233 0164 7B68     	 ldr r3,[r7,#4]
+ 234 0166 9B69     	 ldr r3,[r3,#24]
+ 235 0168 1846     	 mov r0,r3
+ 236 016a FFF7FEFF 	 bl __aeabi_f2d
+ 237 016e 0246     	 mov r2,r0
+ 238 0170 0B46     	 mov r3,r1
+ 239 0172 2046     	 mov r0,r4
+ 240 0174 2946     	 mov r1,r5
+ 241 0176 FFF7FEFF 	 bl __aeabi_dmul
+ 242 017a 0246     	 mov r2,r0
+ 243 017c 0B46     	 mov r3,r1
+ 244 017e 1046     	 mov r0,r2
+ 245 0180 1946     	 mov r1,r3
+ 246 0182 FFF7FEFF 	 bl __aeabi_d2uiz
+ 247 0186 0246     	 mov r2,r0
+ 248 0188 7B68     	 ldr r3,[r7,#4]
+ 249 018a 5A60     	 str r2,[r3,#4]
+  30:../lgg/ccu8/spwm.c **** 	p_spwm->cr_w = (p_spwm->ma * arm_sin_f32((float32_t)p_spwm->cnt / p_spwm->period * 2.0*PI + 2.0*PI
+ 250              	 .loc 1 30 0
+ 251 018c 7B68     	 ldr r3,[r7,#4]
+ 252 018e 93ED058A 	 flds s16,[r3,#20]
+ 253 0192 7B68     	 ldr r3,[r7,#4]
+ 254 0194 DB68     	 ldr r3,[r3,#12]
+ 255 0196 07EE903A 	 fmsr s15,r3
+ 256 019a B8EE677A 	 fuitos s14,s15
+ 257 019e 7B68     	 ldr r3,[r7,#4]
+ 258 01a0 1B69     	 ldr r3,[r3,#16]
+ 259 01a2 07EE903A 	 fmsr s15,r3
+ 260 01a6 F8EE677A 	 fuitos s15,s15
+ 261 01aa C7EE277A 	 fdivs s15,s14,s15
+ 262 01ae 17EE900A 	 fmrs r0,s15
+ 263 01b2 FFF7FEFF 	 bl __aeabi_f2d
+ 264 01b6 0246     	 mov r2,r0
+ 265 01b8 0B46     	 mov r3,r1
+ 266 01ba 1046     	 mov r0,r2
+ 267 01bc 1946     	 mov r1,r3
+ 268 01be FFF7FEFF 	 bl __aeabi_dadd
+ 269 01c2 0246     	 mov r2,r0
+ 270 01c4 0B46     	 mov r3,r1
+ 271 01c6 1046     	 mov r0,r2
+ 272 01c8 1946     	 mov r1,r3
+ 273 01ca 23A3     	 adr r3,.L3
+ 274 01cc D3E90023 	 ldrd r2,[r3]
+ 275 01d0 FFF7FEFF 	 bl __aeabi_dmul
+ 276 01d4 0246     	 mov r2,r0
+ 277 01d6 0B46     	 mov r3,r1
+ 278 01d8 1046     	 mov r0,r2
+ 279 01da 1946     	 mov r1,r3
+ 280 01dc 20A3     	 adr r3,.L3+8
+ 281 01de D3E90023 	 ldrd r2,[r3]
+ 282 01e2 FFF7FEFF 	 bl __aeabi_dadd
+ 283 01e6 0246     	 mov r2,r0
+ 284 01e8 0B46     	 mov r3,r1
+ 285 01ea 1046     	 mov r0,r2
+ 286 01ec 1946     	 mov r1,r3
+ 287 01ee FFF7FEFF 	 bl __aeabi_d2f
+ 288 01f2 0346     	 mov r3,r0
+ 289 01f4 1846     	 mov r0,r3
+ 290 01f6 FFF7FEFF 	 bl arm_sin_f32
+ 291 01fa 07EE900A 	 fmsr s15,r0
+ 292 01fe 68EE277A 	 fmuls s15,s16,s15
+ 293 0202 17EE900A 	 fmrs r0,s15
+ 294 0206 FFF7FEFF 	 bl __aeabi_f2d
+ 295 020a 0246     	 mov r2,r0
+ 296 020c 0B46     	 mov r3,r1
+ 297 020e 1046     	 mov r0,r2
+ 298 0210 1946     	 mov r1,r3
+ 299 0212 4FF00002 	 mov r2,#0
+ 300 0216 144B     	 ldr r3,.L3+16
+ 301 0218 FFF7FEFF 	 bl __aeabi_dadd
+ 302 021c 0246     	 mov r2,r0
+ 303 021e 0B46     	 mov r3,r1
+ 304 0220 1446     	 mov r4,r2
+ 305 0222 1D46     	 mov r5,r3
+ 306 0224 7B68     	 ldr r3,[r7,#4]
+ 307 0226 9B69     	 ldr r3,[r3,#24]
+ 308 0228 1846     	 mov r0,r3
+ 309 022a FFF7FEFF 	 bl __aeabi_f2d
+ 310 022e 0246     	 mov r2,r0
+ 311 0230 0B46     	 mov r3,r1
+ 312 0232 2046     	 mov r0,r4
+ 313 0234 2946     	 mov r1,r5
+ 314 0236 FFF7FEFF 	 bl __aeabi_dmul
+ 315 023a 0246     	 mov r2,r0
+ 316 023c 0B46     	 mov r3,r1
+ 317 023e 1046     	 mov r0,r2
+ 318 0240 1946     	 mov r1,r3
+ 319 0242 FFF7FEFF 	 bl __aeabi_d2uiz
+ 320 0246 0246     	 mov r2,r0
+ 321 0248 7B68     	 ldr r3,[r7,#4]
+ 322 024a 9A60     	 str r2,[r3,#8]
+  31:../lgg/ccu8/spwm.c **** }
+ 323              	 .loc 1 31 0
+ 324 024c 0837     	 adds r7,r7,#8
+ 325              	.LCFI4:
+ 326              	 .cfi_def_cfa_offset 24
+ 327 024e BD46     	 mov sp,r7
+ 328              	.LCFI5:
+ 329              	 .cfi_def_cfa_register 13
+ 330              	 
+ 331 0250 BDEC028B 	 fldmfdd sp!,{d8}
+ 332              	.LCFI6:
+ 333              	 .cfi_restore 80
+ 334              	 .cfi_restore 81
+ 335              	 .cfi_def_cfa_offset 16
+ 336 0254 B0BD     	 pop {r4,r5,r7,pc}
+ 337              	.L4:
+ 338 0256 00BF     	 .align 3
+ 339              	.L3:
+ 340 0258 00000060 	 .word 1610612736
+ 341 025c FB210940 	 .word 1074340347
+ 342 0260 00000040 	 .word 1073741824
+ 343 0264 52C10040 	 .word 1073791314
+ 344 0268 0000F03F 	 .word 1072693248
+ 345              	 .cfi_endproc
+ 346              	.LFE145:
+ 348 026c AFF30080 	 .text
+ 349              	.Letext0:
+ 350              	 .file 2 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 351              	 .file 3 "c:\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 352              	 .file 4 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/arm_math.h"
+ 353              	 .file 5 "../lgg/ccu8/spwm.h"
+ 354              	 .file 6 "C:/Users/lgg/Desktop/hithanbo/dave_ws/lgg_xmc/Libraries/CMSIS/Include/cmsis_gcc.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 spwm.c
+    {standard input}:24     .bss.spwm_cnt:00000000 spwm_cnt
+    {standard input}:21     .bss.spwm_cnt:00000000 $d
+    {standard input}:31     .rodata.spwm_max_cnt:00000000 spwm_max_cnt
+    {standard input}:28     .rodata.spwm_max_cnt:00000000 $d
+    {standard input}:38     .bss.spwm_ma:00000000 spwm_ma
+    {standard input}:35     .bss.spwm_ma:00000000 $d
+    {standard input}:45     .bss.spwm_wr:00000000 spwm_wr
+    {standard input}:42     .bss.spwm_wr:00000000 $d
+    {standard input}:52     .bss.spwm_ph:00000000 spwm_ph
+    {standard input}:49     .bss.spwm_ph:00000000 $d
+    {standard input}:59     .bss.ccu8_pr:00000000 ccu8_pr
+    {standard input}:56     .bss.ccu8_pr:00000000 $d
+    {standard input}:68     .text.lgg_spwm_update:00000000 $t
+    {standard input}:73     .text.lgg_spwm_update:00000000 lgg_spwm_update
+    {standard input}:340    .text.lgg_spwm_update:00000258 $d
+                     .debug_frame:00000010 $d
+    {standard input}:348    .text.lgg_spwm_update:0000026c $t
+
+UNDEFINED SYMBOLS
+__aeabi_f2d
+__aeabi_dadd
+__aeabi_dmul
+__aeabi_d2f
+__aeabi_d2uiz
+__aeabi_dsub
+arm_sin_f32
